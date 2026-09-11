@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Stream Hero - 1:1 Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Container query and 3D stream perspective */
+    #stream-container {
+      container-type: inline-size;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center m-0 p-4 font-sans selection:bg-white selection:text-black">
+  <div class="w-full max-w-5xl flex items-center justify-center">
+    
+    <!-- 1:1 Clone of @ruixen.ui / ImageStreamHero -->
+    <div id="stream-container" class="relative overflow-hidden h-[560px] w-full rounded-2xl border border-white/10 bg-black shadow-2xl">
+      
+      <!-- Generated Keyframes Style injected by script -->
+      <style id="stream-keyframes"></style>
+
+      <!-- 3D Perspective Viewport -->
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0" style="perspective: 30cqw; perspective-origin: 50% 55%;">
+        <div class="absolute inset-0" style="transform-style: preserve-3d;">
+          <!-- Dual stream rails: Left (stream-l) and Right (stream-r) -->
+          <div id="stream-cards-rail"></div>
+        </div>
+      </div>
+
+      <!-- Foreground Centered Hero Copy -->
+      <div class="relative z-10 flex h-full flex-col items-center justify-between py-12 text-center pointer-events-none">
+        <div class="px-6">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider bg-white/10 text-white/80 border border-white/15 mb-3 pointer-events-auto">
+            Ruixen UI Primitive
+          </span>
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white max-w-lg leading-tight">
+            Infinite 3D Visual Stream
+          </h1>
+        </div>
+
+        <p class="max-w-md text-balance px-6 text-xs sm:text-sm text-neutral-400">
+          A hero that leads with the images instead of describing them. Swap in your own and the corridor rebuilds around them.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
