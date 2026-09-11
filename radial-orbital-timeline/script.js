@@ -1,6 +1,6 @@
 /**
- * Radial Orbital Timeline Component (Vanilla JS)
- * Enhanced HTML/CSS/JS clone of 21st.dev component by @jatin-yadav05
+ * 1-to-1 Vanilla Port of 21st.dev's Radial Orbital Timeline
+ * Original Author: @jatin-yadav05
  */
 
 const timelineData = [
@@ -8,8 +8,8 @@ const timelineData = [
     id: 1,
     title: "Planning",
     date: "Jan 2024",
-    content: "Project planning, feasibility analysis, and scope requirements gathering phase.",
-    category: "Strategy",
+    content: "Project planning and requirements gathering phase.",
+    category: "Planning",
     icon: "calendar",
     relatedIds: [2],
     status: "completed",
@@ -19,8 +19,8 @@ const timelineData = [
     id: 2,
     title: "Design",
     date: "Feb 2024",
-    content: "UI/UX component systems, interaction tokens, and high-fidelity prototypes.",
-    category: "Creative",
+    content: "UI/UX design and system architecture.",
+    category: "Design",
     icon: "file-text",
     relatedIds: [1, 3],
     status: "completed",
@@ -30,8 +30,8 @@ const timelineData = [
     id: 3,
     title: "Development",
     date: "Mar 2024",
-    content: "Core engineering architecture, canvas rendering pipeline, and dynamic nodes.",
-    category: "Engineering",
+    content: "Core features implementation and testing.",
+    category: "Development",
     icon: "code",
     relatedIds: [2, 4],
     status: "in-progress",
@@ -41,8 +41,8 @@ const timelineData = [
     id: 4,
     title: "Testing",
     date: "Apr 2024",
-    content: "End-to-end integration, performance stress tests, and accessibility validation.",
-    category: "Quality",
+    content: "User testing and bug fixes.",
+    category: "Testing",
     icon: "user",
     relatedIds: [3, 5],
     status: "pending",
@@ -52,8 +52,8 @@ const timelineData = [
     id: 5,
     title: "Release",
     date: "May 2024",
-    content: "Production deployment, global CDN propagation, and launch monitoring.",
-    category: "DevOps",
+    content: "Final deployment and release.",
+    category: "Release",
     icon: "clock",
     relatedIds: [4],
     status: "pending",
@@ -61,265 +61,199 @@ const timelineData = [
   },
 ];
 
-class RadialTimelineApp {
+class ExactRadialTimeline {
   constructor(data) {
     this.data = data;
-    this.activeId = 3; // Default to Development (in-progress)
-    this.isPaused = false;
+    this.activeId = null;
     this.rotationAngle = 0;
-    this.orbitRadius = 250;
-    this.animationFrameId = null;
+    this.isAutoOrbiting = true;
+    this.orbitRadius = 200; // Original component uses radius of 200
+    this.relatedMap = {};
 
-    // DOM Elements
-    this.viewport = document.getElementById("orbital-viewport");
-    this.canvas = document.getElementById("orbital-canvas");
-    this.nodesContainer = document.getElementById("nodes-container");
-    this.orbitTracksGroup = document.getElementById("orbit-tracks");
-    this.relationLinesGroup = document.getElementById("relation-lines");
-    this.railItems = document.getElementById("rail-items");
-
-    // Center Pod Elements
-    this.podKicker = document.getElementById("pod-kicker");
-    this.podTitle = document.getElementById("pod-title");
-    this.podDate = document.getElementById("pod-date");
-    this.podStatus = document.getElementById("pod-status");
-    this.podDesc = document.getElementById("pod-desc");
-    this.podEnergyVal = document.getElementById("pod-energy-val");
-    this.podEnergyFill = document.getElementById("pod-energy-fill");
-
-    // Controls
-    this.toggleMotionBtn = document.getElementById("toggle-motion-btn");
-    this.resetBtn = document.getElementById("reset-btn");
+    this.container = document.getElementById("radial-container");
+    this.stage = document.getElementById("orbital-stage");
+    this.mount = document.getElementById("nodes-mount");
 
     this.init();
   }
 
   init() {
-    this.updateOrbitRadius();
-    window.addEventListener("resize", () => {
-      this.updateOrbitRadius();
-      this.renderCanvas();
-      this.updateNodePositions();
+    this.render();
+    this.startLoop();
+    this.attachEvents();
+  }
+
+  calculatePosition(index, total) {
+    const angleDeg = ((index / total) * 360 + this.rotationAngle) % 360;
+    const rad = (angleDeg * Math.PI) / 180;
+    const x = this.orbitRadius * Math.cos(rad);
+    const y = this.orbitRadius * Math.sin(rad);
+
+    // Exact formula from 21st.dev Component.tsx
+    const zIndex = Math.round(100 + 50 * Math.cos(rad));
+    const opacity = Math.max(0.4, Math.min(1, 0.4 + 0.6 * ((1 + Math.sin(rad)) / 2)));
+
+    return { x, y, angleDeg, zIndex, opacity };
+  }
+
+  getStatusBadgeClass(status) {
+    switch (status) {
+      case "completed":
+        return "text-white bg-black border-white border";
+      case "in-progress":
+        return "text-black bg-white border-black border";
+      case "pending":
+      default:
+        return "text-white bg-black/40 border-white/50 border";
+    }
+  }
+
+  render() {
+    this.mount.innerHTML = "";
+
+    this.data.forEach((item, index) => {
+      const pos = this.calculatePosition(index, this.data.length);
+      const isActive = this.activeId === item.id;
+      const isRelated = Boolean(this.relatedMap[item.id]);
+
+      const nodeEl = document.createElement("div");
+      nodeEl.className = "absolute transition-all duration-700 cursor-pointer";
+      nodeEl.style.transform = `translate(${pos.x.toFixed(3)}px, ${pos.y.toFixed(3)}px)`;
+      nodeEl.style.zIndex = isActive ? 200 : pos.zIndex;
+      nodeEl.style.opacity = isActive ? 1 : pos.opacity;
+      nodeEl.dataset.id = item.id;
+
+      // Glow halo calculated from energy: width = energy * 0.5 + 40
+      const haloDim = item.energy * 0.5 + 40;
+      const haloOffset = -((haloDim - 40) / 2);
+
+      nodeEl.innerHTML = `
+        <!-- Radial energy halo -->
+        <div class="absolute rounded-full -inset-1 ${isRelated ? "animate-pulse duration-1000" : ""}"
+             style="background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%); width: ${haloDim}px; height: ${haloDim}px; left: ${haloOffset}px; top: ${haloOffset}px;">
+        </div>
+
+        <!-- Node Circle -->
+        <div class="
+          w-10 h-10 rounded-full flex items-center justify-center
+          ${isActive ? "bg-white text-black" : isRelated ? "bg-white/50 text-black" : "bg-black text-white"}
+          border-2 
+          ${isActive ? "border-white shadow-lg shadow-white/30" : isRelated ? "border-white animate-pulse" : "border-white/40"}
+          transition-all duration-300 transform
+          ${isActive ? "scale-150" : ""}
+        ">
+          <i data-lucide="${item.icon}" style="width: 16px; height: 16px;"></i>
+        </div>
+
+        <!-- Node Title Label -->
+        <div class="
+          absolute top-12 whitespace-nowrap
+          text-xs font-semibold tracking-wider
+          transition-all duration-300
+          ${isActive ? "text-white scale-125 font-bold" : "text-white/70"}
+        ">
+          ${item.title}
+        </div>
+
+        <!-- Active Card Overlay -->
+        ${
+          isActive
+            ? `
+          <div class="absolute top-20 left-1/2 -translate-x-1/2 w-64 bg-black/90 backdrop-blur-lg border border-white/30 rounded-lg shadow-xl shadow-white/10 p-4 overflow-visible text-white cursor-default"
+               onclick="event.stopPropagation()">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-white/50"></div>
+            
+            <div class="pb-2">
+              <div class="flex justify-between items-center mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono tracking-wider font-semibold uppercase ${this.getStatusBadgeClass(item.status)}">
+                  ${item.status === "completed" ? "COMPLETE" : item.status === "in-progress" ? "IN PROGRESS" : "PENDING"}
+                </span>
+                <span class="text-xs font-mono text-white/50">${item.date}</span>
+              </div>
+              <h3 class="text-sm font-semibold tracking-tight mt-1 text-white">${item.title}</h3>
+            </div>
+
+            <div class="text-xs text-white/80">
+              <p class="leading-relaxed">${item.content}</p>
+              
+              <div class="mt-4 pt-3 border-t border-white/10">
+                <div class="flex justify-between items-center text-xs mb-1 text-white/70">
+                  <span class="flex items-center gap-1">
+                    <i data-lucide="zap" style="width: 10px; height: 10px;"></i>
+                    Energy Level
+                  </span>
+                  <span class="font-mono text-white">${item.energy}%</span>
+                </div>
+                <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500" style="width: ${item.energy}%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+            : ""
+        }
+      `;
+
+      nodeEl.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.toggleNode(item.id);
+      });
+
+      this.mount.appendChild(nodeEl);
     });
 
-    this.renderOrbitTracks();
-    this.renderNodes();
-    this.renderRail();
-    this.attachEventListeners();
-    this.selectNode(this.activeId);
-
-    // Initialize Lucide icons
     if (window.lucide) {
       window.lucide.createIcons();
     }
-
-    this.startOrbitLoop();
   }
 
-  updateOrbitRadius() {
-    const isMobile = window.innerWidth <= 768;
-    this.orbitRadius = isMobile ? 140 : 250;
-  }
-
-  renderOrbitTracks() {
-    const cx = this.canvas.clientWidth / 2 || 340;
-    const cy = this.canvas.clientHeight / 2 || 340;
-
-    // Main orbit ring
-    this.orbitTracksGroup.innerHTML = `
-      <circle cx="50%" cy="50%" r="${this.orbitRadius}" class="orbit-circle active-track" />
-      <circle cx="50%" cy="50%" r="${this.orbitRadius * 0.65}" class="orbit-circle" />
-      <circle cx="50%" cy="50%" r="${this.orbitRadius * 1.25}" class="orbit-circle" />
-    `;
-  }
-
-  renderNodes() {
-    this.nodesContainer.innerHTML = "";
-    const count = this.data.length;
-
-    this.data.forEach((item, index) => {
-      // Evenly distribute 360 deg
-      const baseAngle = (index / count) * (2 * Math.PI) - Math.PI / 2;
-
-      const wrapper = document.createElement("div");
-      wrapper.className = "node-wrapper";
-      wrapper.id = `node-wrapper-${item.id}`;
-      wrapper.dataset.id = item.id;
-      wrapper.dataset.baseAngle = baseAngle;
-
-      wrapper.innerHTML = `
-        <button class="node-btn" data-id="${item.id}" data-status="${item.status}" aria-label="Select milestone ${item.title}">
-          <div class="node-icon-wrap">
-            <i data-lucide="${item.icon}"></i>
-          </div>
-          <div class="node-info">
-            <span class="node-name">${item.title}</span>
-            <span class="node-sub">${item.date}</span>
-          </div>
-        </button>
-      `;
-
-      this.nodesContainer.appendChild(wrapper);
-    });
-
-    this.updateNodePositions();
-  }
-
-  renderRail() {
-    this.railItems.innerHTML = "";
-    this.data.forEach((item) => {
-      const chip = document.createElement("button");
-      chip.className = `rail-chip ${item.id === this.activeId ? "is-active" : ""}`;
-      chip.dataset.id = item.id;
-      chip.textContent = item.title;
-      chip.addEventListener("click", () => this.selectNode(item.id));
-      this.railItems.appendChild(chip);
-    });
-  }
-
-  updateNodePositions() {
-    const cx = this.viewport.clientWidth / 2;
-    const cy = this.viewport.clientHeight / 2;
-    const count = this.data.length;
-
-    this.data.forEach((item, index) => {
-      const wrapper = document.getElementById(`node-wrapper-${item.id}`);
-      if (!wrapper) return;
-
-      const baseAngle = parseFloat(wrapper.dataset.baseAngle);
-      const currentAngle = baseAngle + (this.rotationAngle * Math.PI) / 180;
-
-      const x = Math.cos(currentAngle) * this.orbitRadius;
-      const y = Math.sin(currentAngle) * this.orbitRadius;
-
-      wrapper.style.transform = `translate(${x}px, ${y}px)`;
-      wrapper.dataset.posX = cx + x;
-      wrapper.dataset.posY = cy + y;
-    });
-
-    this.renderRelations();
-  }
-
-  renderRelations() {
-    let linesSvg = "";
-    const activeItem = this.data.find((d) => d.id === this.activeId);
-
-    this.data.forEach((item) => {
-      const sourceWrapper = document.getElementById(`node-wrapper-${item.id}`);
-      if (!sourceWrapper) return;
-
-      const sx = parseFloat(sourceWrapper.dataset.posX);
-      const sy = parseFloat(sourceWrapper.dataset.posY);
-
-      (item.relatedIds || []).forEach((targetId) => {
-        // Only draw in one direction to avoid duplication
-        if (item.id < targetId) {
-          const targetWrapper = document.getElementById(`node-wrapper-${targetId}`);
-          if (!targetWrapper) return;
-
-          const tx = parseFloat(targetWrapper.dataset.posX);
-          const ty = parseFloat(targetWrapper.dataset.posY);
-
-          const isConnectedToActive =
-            activeItem && (activeItem.id === item.id || activeItem.id === targetId ||
-            (activeItem.relatedIds && activeItem.relatedIds.includes(item.id) && activeItem.relatedIds.includes(targetId)));
-
-          linesSvg += `
-            <line
-              x1="${sx}" y1="${sy}"
-              x2="${tx}" y2="${ty}"
-              class="relation-path ${isConnectedToActive ? "highlighted" : ""}"
-            />
-          `;
-        }
+  toggleNode(id) {
+    if (this.activeId === id) {
+      // Deselect
+      this.activeId = null;
+      this.isAutoOrbiting = true;
+      this.relatedMap = {};
+    } else {
+      // Select
+      this.activeId = id;
+      this.isAutoOrbiting = false;
+      const targetItem = this.data.find((d) => d.id === id);
+      const related = targetItem ? targetItem.relatedIds || [] : [];
+      this.relatedMap = {};
+      related.forEach((relId) => {
+        this.relatedMap[relId] = true;
       });
-    });
 
-    this.relationLinesGroup.innerHTML = linesSvg;
+      // Align selected item to bottom (270deg) as in original
+      const index = this.data.findIndex((d) => d.id === id);
+      const baseAngle = (index / this.data.length) * 360;
+      this.rotationAngle = (270 - baseAngle + 360) % 360;
+    }
+    this.render();
   }
 
-  selectNode(id) {
-    this.activeId = id;
-    const item = this.data.find((d) => d.id === id);
-    if (!item) return;
-
-    // Update center pod
-    this.podKicker.textContent = item.category || "MILESTONE";
-    this.podTitle.textContent = item.title;
-    this.podDate.textContent = item.date;
-    this.podStatus.textContent = item.status.replace("-", " ");
-    this.podStatus.setAttribute("data-status", item.status);
-    this.podDesc.textContent = item.content;
-    this.podEnergyVal.textContent = `${item.energy}%`;
-    this.podEnergyFill.style.width = `${item.energy}%`;
-
-    // Highlight button states
-    document.querySelectorAll(".node-btn").forEach((btn) => {
-      const btnId = parseInt(btn.dataset.id, 10);
-      btn.classList.toggle("is-active", btnId === id);
-      const isRelated = item.relatedIds && item.relatedIds.includes(btnId);
-      btn.classList.toggle("is-related", Boolean(isRelated));
-    });
-
-    // Update bottom rail
-    document.querySelectorAll(".rail-chip").forEach((chip) => {
-      chip.classList.toggle("is-active", parseInt(chip.dataset.id, 10) === id);
-    });
-
-    this.renderRelations();
-  }
-
-  attachEventListeners() {
-    this.nodesContainer.addEventListener("click", (e) => {
-      const btn = e.target.closest(".node-btn");
-      if (btn) {
-        const id = parseInt(btn.dataset.id, 10);
-        this.selectNode(id);
+  attachEvents() {
+    this.container.addEventListener("click", () => {
+      if (this.activeId !== null) {
+        this.activeId = null;
+        this.isAutoOrbiting = true;
+        this.relatedMap = {};
+        this.render();
       }
-    });
-
-    this.toggleMotionBtn.addEventListener("click", () => {
-      this.isPaused = !this.isPaused;
-      document.body.classList.toggle("is-paused", this.isPaused);
-      if (!this.isPaused) {
-        this.startOrbitLoop();
-      }
-    });
-
-    this.resetBtn.addEventListener("click", () => {
-      this.rotationAngle = 0;
-      this.selectNode(1);
-      this.updateNodePositions();
-    });
-
-    // Pause on hover over center pod or nodes for accessibility/UX
-    this.viewport.addEventListener("mouseenter", () => {
-      this.isHovered = true;
-    });
-    this.viewport.addEventListener("mouseleave", () => {
-      this.isHovered = false;
     });
   }
 
-  startOrbitLoop() {
-    const loop = () => {
-      if (this.isPaused) return;
-
-      if (!this.isHovered) {
-        // Slow continuous orbit: ~0.08 degrees per frame
-        this.rotationAngle = (this.rotationAngle + 0.08) % 360;
-        this.updateNodePositions();
+  startLoop() {
+    setInterval(() => {
+      if (this.isAutoOrbiting) {
+        this.rotationAngle = Number(((this.rotationAngle + 0.3) % 360).toFixed(3));
+        this.render();
       }
-
-      this.animationFrameId = requestAnimationFrame(loop);
-    };
-
-    cancelAnimationFrame(this.animationFrameId);
-    this.animationFrameId = requestAnimationFrame(loop);
+    }, 50);
   }
 }
 
-// Instantiate on DOM load
 document.addEventListener("DOMContentLoaded", () => {
-  window.radialTimeline = new RadialTimelineApp(timelineData);
+  new ExactRadialTimeline(timelineData);
 });
