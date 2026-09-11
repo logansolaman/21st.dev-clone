@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coupon Reveal Button (Button-26) - 1:1 Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center m-0 p-0 font-sans selection:bg-blue-500 selection:text-white">
+  <div class="w-screen min-h-screen flex justify-center items-center">
+    <div class="flex min-h-[240px] w-full items-center justify-center p-8">
+      
+      <!-- 1:1 Clone of button-26 by ShadcnSpace -->
+      <button id="coupon-btn" class="group relative w-full max-w-72 h-12 rounded-lg font-medium text-sm overflow-visible select-none outline-none transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 cursor-pointer">
+        
+        <!-- Dashed Background Backplate -->
+        <div id="dashed-backplate" class="absolute inset-0 flex items-center justify-center rounded-lg border-2 border-dashed transition-colors duration-300 bg-blue-500/10 border-blue-500 text-blue-500 shadow-[inset_0_2px_4px_rgba(59,130,246,0.06)]">
+          <div class="relative flex w-full items-center justify-center px-3 text-center font-semibold">
+            
+            <!-- Code Reveal State (Shown on hover peek or full reveal) -->
+            <div id="code-reveal" class="absolute inset-0 flex items-center justify-center gap-1.5 transition-all duration-200 opacity-0">
+              <span id="coupon-pill" class="font-mono px-2 py-0.5 rounded text-xs tracking-wider bg-blue-500/10">SHADSPACE20</span>
+              <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 animate-pulse">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+              </svg>
+              <!-- Copied badge overlay -->
+              <span id="copied-label" class="hidden flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span>Copied to Clipboard!</span>
+              </span>
+            </div>
+
+            <!-- Initial Back Text -->
+            <span id="back-text" class="absolute inset-0 flex items-center justify-center transition-opacity duration-200 opacity-100">
+              Here's your coupon code!
+            </span>
+
+          </div>
+        </div>
+
+        <!-- Peeling Front Mask Layer (Clipped via Polygon) -->
+        <div id="front-mask" aria-hidden="true" class="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-blue-500 text-white font-semibold shadow-md motion-reduce:transition-none" style="clip-path: polygon(0px 0px, 260px 0px, 236px 100%, 0px 100%); transition: clip-path 400ms cubic-bezier(0.22, 1, 0.36, 1);">
+          <span class="px-6 text-center truncate">Reveal Coupon Code</span>
+        </div>
+
+        <!-- Folded Sticker Dogear Flap (SVG with Peel Gradient) -->
+        <div id="peel-flap" aria-hidden="true" class="pointer-events-none absolute -top-1 origin-bottom-left motion-reduce:transition-none" style="height: 56px; width: 48px; left: 224px; opacity: 1; transform: scale(1); transition: left 400ms cubic-bezier(0.22, 1, 0.36, 1), transform 400ms cubic-bezier(0.22, 1, 0.36, 1), opacity 250ms ease-out;">
+          <svg width="48" height="56" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[-3px_4px_5px_rgba(0,0,0,0.18)]">
+            <path d="M 36 4 L 12 52 L 28 56 Z" fill="url(#peelGradient-26)"></path>
+            <defs>
+              <linearGradient id="peelGradient-26" x1="36" y1="4" x2="18" y2="54" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.4"></stop>
+                <stop offset="25%" stop-color="#3b82f6" stop-opacity="0.7"></stop>
+                <stop offset="100%" stop-color="#3b82f6" stop-opacity="1"></stop>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+      </button>
+
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
