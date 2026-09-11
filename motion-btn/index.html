@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Motion Button - 1:1 Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --pattern: #262626;
+      --color-foreground: #ffffff;
+    }
+    /* Corner spring animation */
+    .bracket {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.25s ease;
+    }
+    /* Hover state offsets */
+    .motion-btn-wrap:hover .corner-tl { transform: translate(-3px, -3px); border-color: rgb(82, 82, 82); }
+    .motion-btn-wrap:hover .corner-tr { transform: translate(3px, -3px); border-color: rgb(82, 82, 82); }
+    .motion-btn-wrap:hover .corner-bl { transform: translate(-3px, 3px); border-color: rgb(82, 82, 82); }
+    .motion-btn-wrap:hover .corner-br { transform: translate(3px, 3px); border-color: rgb(82, 82, 82); }
+
+    /* Tap / Active state */
+    .motion-btn-wrap.is-tap .corner-tl { transform: translate(2px, 2px); border-color: #2CD4BD; }
+    .motion-btn-wrap.is-tap .corner-tr { transform: translate(-2px, 2px); border-color: #2CD4BD; }
+    .motion-btn-wrap.is-tap .corner-bl { transform: translate(2px, -2px); border-color: #2CD4BD; }
+    .motion-btn-wrap.is-tap .corner-br { transform: translate(-2px, -2px); border-color: #2CD4BD; }
+
+    /* Sliding color curtain */
+    .fill-curtain {
+      transform-origin: 0% 50%;
+      transform: scaleX(0);
+      background-color: #171717;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease;
+    }
+    .motion-btn-wrap:hover .fill-curtain {
+      transform: scaleX(1);
+      background-color: #171717;
+    }
+    .motion-btn-wrap.is-tap .fill-curtain {
+      transform: scaleX(1);
+      background-color: #2CD4BD;
+    }
+
+    /* Label transition */
+    .btn-label {
+      color: var(--color-foreground);
+      transition: color 0.25s ease;
+    }
+    .motion-btn-wrap:hover .btn-label {
+      color: #ffffff;
+    }
+    .motion-btn-wrap.is-tap .btn-label {
+      color: #0a2926;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center m-0 p-0 font-sans select-none">
+  <div class="w-screen min-h-screen flex justify-center items-center">
+    <div class="flex h-[calc(100vh-64px)] w-full items-center justify-center">
+      
+      <!-- 1:1 Motion Button Component Wrapper -->
+      <div id="motion-btn-wrap" class="motion-btn-wrap relative inline-block cursor-pointer [--pattern:theme(colors.neutral.800)]" tabindex="0">
+        
+        <!-- Corner Brackets -->
+        <div class="bracket corner-tr absolute top-0 right-0 w-2 h-2 border-t border-r border-neutral-700 z-20"></div>
+        <div class="bracket corner-tl absolute top-0 left-0 w-2 h-2 border-t border-l border-neutral-700 z-20"></div>
+        <div class="bracket corner-bl absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neutral-700 z-20"></div>
+        <div class="bracket corner-br absolute right-0 bottom-0 w-2 h-2 border-r border-b border-neutral-700 z-20"></div>
+
+        <!-- Button Core -->
+        <button class="relative overflow-hidden px-10 py-3 font-medium uppercase text-sm tracking-wider outline-none block border-0 bg-transparent cursor-pointer">
+          <!-- Diagonal Pattern Layer -->
+          <span class="absolute inset-0 z-0 bg-[repeating-linear-gradient(315deg,rgba(255,255,255,0.08)_0,rgba(255,255,255,0.08)_1px,transparent_0,transparent_50%)] [background-size:7px_7px]"></span>
+          
+          <!-- Sliding Curtain -->
+          <span class="fill-curtain absolute inset-0 z-10"></span>
+          
+          <!-- Text Label -->
+          <span class="btn-label relative z-20 transition-colors">Join The Horde</span>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

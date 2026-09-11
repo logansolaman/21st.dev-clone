@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Motion Button - Enhanced Cyberpunk Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --font-display: "Space Grotesk", sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+      --accent-active: #2CD4BD;
+    }
+    body {
+      background-color: #050810;
+      background-image:
+        radial-gradient(circle at 50% 20%, rgba(44, 212, 189, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
+        linear-gradient(to bottom, transparent, rgba(2, 6, 23, 0.95));
+      font-family: var(--font-display);
+    }
+    .bracket-enh {
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.25s ease,
+                  box-shadow 0.25s ease;
+    }
+    /* Dynamic theme styling classes applied via JS */
+    .motion-btn-custom:hover .corner-tl { transform: translate(-4px, -4px); border-color: var(--bracket-hover, #525252); }
+    .motion-btn-custom:hover .corner-tr { transform: translate(4px, -4px); border-color: var(--bracket-hover, #525252); }
+    .motion-btn-custom:hover .corner-bl { transform: translate(-4px, 4px); border-color: var(--bracket-hover, #525252); }
+    .motion-btn-custom:hover .corner-br { transform: translate(4px, 4px); border-color: var(--bracket-hover, #525252); }
+
+    .motion-btn-custom.is-active-tap .corner-tl { transform: translate(2px, 2px); border-color: var(--accent-active); box-shadow: 0 0 8px var(--accent-active); }
+    .motion-btn-custom.is-active-tap .corner-tr { transform: translate(-2px, 2px); border-color: var(--accent-active); box-shadow: 0 0 8px var(--accent-active); }
+    .motion-btn-custom.is-active-tap .corner-bl { transform: translate(2px, -2px); border-color: var(--accent-active); box-shadow: 0 0 8px var(--accent-active); }
+    .motion-btn-custom.is-active-tap .corner-br { transform: translate(-2px, -2px); border-color: var(--accent-active); box-shadow: 0 0 8px var(--accent-active); }
+
+    .sliding-curtain {
+      transform-origin: 0% 50%;
+      transform: scaleX(0);
+      background-color: #121826;
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease;
+    }
+    .motion-btn-custom:hover .sliding-curtain {
+      transform: scaleX(1);
+    }
+    .motion-btn-custom.is-active-tap .sliding-curtain {
+      transform: scaleX(1);
+      background-color: var(--accent-active);
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8 select-none">
+
+  <!-- Top bar -->
+  <header class="w-full max-w-6xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">motion-btn_enhanced</h1>
+    </div>
+    <div class="text-xs font-mono text-slate-500">Cyberpunk Bracket Interaction Studio</div>
+  </header>
+
+  <!-- Main Showcase Container -->
+  <main class="w-full max-w-6xl mx-auto flex-1 flex flex-col lg:flex-row items-center justify-center gap-10 my-8">
+    
+    <!-- Hero Button Display Stage -->
+    <div class="flex-1 flex flex-col items-center justify-center relative py-20 px-8 rounded-2xl bg-gradient-to-b from-slate-900/40 to-slate-950/80 border border-slate-800 shadow-2xl w-full min-h-[380px]">
+      <div class="absolute inset-0 bg-[radial-gradient(#2cd4bd10_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none rounded-2xl"></div>
+
+      <!-- The Custom Motion Button -->
+      <div class="relative z-10 flex flex-col items-center gap-6">
+        
+        <div id="enhanced-btn-wrap" class="motion-btn-custom relative inline-block cursor-pointer outline-none transition-transform" tabindex="0">
+          
+          <!-- Animated Corner Brackets -->
+          <div class="bracket-enh corner-tr absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-slate-700 z-20"></div>
+          <div class="bracket-enh corner-tl absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-slate-700 z-20"></div>
+          <div class="bracket-enh corner-bl absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-slate-700 z-20"></div>
+          <div class="bracket-enh corner-br absolute right-0 bottom-0 w-3 h-3 border-r-2 border-b-2 border-slate-700 z-20"></div>
+
+          <!-- Button Shell -->
+          <button class="relative overflow-hidden px-10 py-3.5 font-bold uppercase tracking-wider text-sm flex items-center gap-3 border-0 bg-transparent cursor-pointer">
+            <!-- Micro-pattern grid overlay -->
+            <span class="absolute inset-0 z-0 bg-[repeating-linear-gradient(315deg,rgba(255,255,255,0.06)_0,rgba(255,255,255,0.06)_1px,transparent_0,transparent_50%)] [background-size:8px_8px]"></span>
+            
+            <!-- Sliding Color Curtain -->
+            <span class="sliding-curtain absolute inset-0 z-10"></span>
+            
+            <!-- Leading Icon -->
+            <i data-lucide="crosshair" class="w-4 h-4 text-emerald-400 relative z-20 transition-transform duration-300" id="btn-icon"></i>
+            
+            <!-- Label -->
+            <span id="btn-label-text" class="relative z-20 text-slate-100 transition-colors">Join The Horde</span>
+          </button>
+
+        </div>
+
+        <!-- Feedback badge -->
+        <div id="tap-toast" class="text-xs font-mono text-emerald-400 opacity-0 transition-opacity duration-300 flex items-center gap-1.5">
+          <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+          <span>Execution Signal Dispatched</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Live Customizer Controls Panel -->
+    <div class="w-full lg:w-96 flex flex-col gap-5 p-6 rounded-2xl bg-slate-900/40 border border-slate-800 text-sm">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h2 class="font-semibold text-slate-200">Style Studio</h2>
+        <span class="text-xs font-mono text-slate-500">Live Tokens</span>
+      </div>
+
+      <!-- Theme Swatches -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-mono uppercase tracking-wider text-slate-400">Color Palette</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button data-palette="teal" class="palette-btn active py-2 px-2.5 rounded-lg border border-emerald-500/50 bg-emerald-500/10 text-emerald-400 text-xs font-semibold text-center transition-colors">Cyber Teal</button>
+          <button data-palette="amber" class="palette-btn py-2 px-2.5 rounded-lg border border-slate-700 bg-slate-800/40 text-slate-300 text-xs font-semibold text-center transition-colors">Gold Hazard</button>
+          <button data-palette="crimson" class="palette-btn py-2 px-2.5 rounded-lg border border-slate-700 bg-slate-800/40 text-slate-300 text-xs font-semibold text-center transition-colors">Neon Red</button>
+        </div>
+      </div>
+
+      <!-- Bracket Size / Corner Offsets -->
+      <div class="flex flex-col gap-2">
+        <div class="flex justify-between items-center text-xs">
+          <label class="font-mono uppercase tracking-wider text-slate-400">Bracket Size</label>
+          <span id="bracket-size-val" class="font-mono text-slate-300">12px</span>
+        </div>
+        <input id="bracket-slider" type="range" min="8" max="20" step="2" value="12" class="w-full accent-emerald-400 bg-slate-800 rounded-lg cursor-pointer" />
+      </div>
+
+      <!-- Button Label Input -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-mono uppercase tracking-wider text-slate-400">Button Label</label>
+        <input type="text" id="label-input" value="Join The Horde" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 transition-colors font-mono" />
+      </div>
+
+      <!-- Icon Select -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-mono uppercase tracking-wider text-slate-400">Leading Icon</label>
+        <select id="icon-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors">
+          <option value="crosshair">Crosshair</option>
+          <option value="shield">Shield</option>
+          <option value="terminal">Terminal</option>
+          <option value="flame">Flame</option>
+          <option value="none">No Icon</option>
+        </select>
+      </div>
+
+      <!-- Copy Code -->
+      <button id="copy-btn" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors mt-2">
+        <i data-lucide="copy" class="w-4 h-4"></i>
+        <span>Copy HTML/CSS Snippet</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-6xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
+    <div>Original design by @radiumcoders • evilbuttons.com</div>
+    <div>Corner Spring Physics • Zero Extra Dependencies</div>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>
