@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morphing Popover - 1:1 Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Smooth Spring Morph Transition */
+    .morph-surface {
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.25s ease;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex items-center justify-center m-0 p-0 font-sans selection:bg-zinc-800">
+  <div class="relative flex items-center justify-center min-h-screen w-full p-16">
+    
+    <!-- Background grid dot pattern -->
+    <div class="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
+
+    <!-- Center Morphing Anchor Container -->
+    <div class="relative flex items-center justify-center">
+      
+      <!-- Morphing Card Surface -->
+      <div id="morph-box" class="morph-surface relative flex flex-col justify-center items-center overflow-hidden border border-zinc-800 bg-zinc-900 shadow-xl rounded-lg w-[128px] h-[38px] cursor-pointer">
+        
+        <!-- Closed Trigger State (Button) -->
+        <div id="trigger-state" class="absolute inset-0 flex items-center justify-center px-4 py-2 text-sm font-medium text-zinc-100 transition-opacity duration-200">
+          <span>Open popover</span>
+        </div>
+
+        <!-- Expanded Popover Content State -->
+        <div id="content-state" class="w-80 p-5 flex flex-col gap-4 opacity-0 pointer-events-none transition-opacity duration-200">
+          <div class="flex items-center justify-between">
+            <div class="space-y-1">
+              <h4 class="leading-none font-medium text-sm text-zinc-100">Dimensions</h4>
+              <p class="text-zinc-400 text-xs">Set the dimensions for the layer.</p>
+            </div>
+            <!-- Optional close button icon -->
+            <button id="close-btn" class="text-zinc-400 hover:text-white transition-colors p-1 rounded-md hover:bg-zinc-800" aria-label="Close">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="grid gap-2.5 text-xs">
+            <div class="grid grid-cols-3 items-center gap-3">
+              <label class="font-medium text-zinc-300" for="width">Width</label>
+              <input id="width" value="100%" class="col-span-2 h-8 rounded-md border border-zinc-750 bg-zinc-950 px-2.5 text-xs text-zinc-100 focus:outline-none focus:border-zinc-500 transition-colors" />
+            </div>
+            <div class="grid grid-cols-3 items-center gap-3">
+              <label class="font-medium text-zinc-300" for="maxWidth">Max. width</label>
+              <input id="maxWidth" value="300px" class="col-span-2 h-8 rounded-md border border-zinc-750 bg-zinc-950 px-2.5 text-xs text-zinc-100 focus:outline-none focus:border-zinc-500 transition-colors" />
+            </div>
+            <div class="grid grid-cols-3 items-center gap-3">
+              <label class="font-medium text-zinc-300" for="height">Height</label>
+              <input id="height" value="25px" class="col-span-2 h-8 rounded-md border border-zinc-750 bg-zinc-950 px-2.5 text-xs text-zinc-100 focus:outline-none focus:border-zinc-500 transition-colors" />
+            </div>
+            <div class="grid grid-cols-3 items-center gap-3">
+              <label class="font-medium text-zinc-300" for="maxHeight">Max. height</label>
+              <input id="maxHeight" value="none" class="col-span-2 h-8 rounded-md border border-zinc-750 bg-zinc-950 px-2.5 text-xs text-zinc-100 focus:outline-none focus:border-zinc-500 transition-colors" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morphing Popover - Enhanced Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --font-sans: "Plus Jakarta Sans", sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+    }
+    .morph-container {
+      transition: width 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                  height 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-radius 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.25s ease;
+    }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8 selection:bg-sky-500 selection:text-black">
+
+  <!-- Top Bar -->
+  <header class="w-full max-w-6xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/25">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">morphing-popover_enhanced</h1>
+    </div>
+    <div class="text-xs font-mono text-slate-500">Multi-variant Layout Morphing</div>
+  </header>
+
+  <!-- Showcase Stage -->
+  <main class="w-full max-w-5xl mx-auto flex-1 flex flex-col items-center justify-center my-12">
+    
+    <!-- Variant Mode Switcher -->
+    <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800 mb-10 shadow-lg">
+      <button data-mode="dimensions" class="mode-btn active px-4 py-1.5 rounded-lg text-xs font-medium text-white bg-slate-800 shadow transition-colors">Dimensions Form</button>
+      <button data-mode="note" class="mode-btn px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors">Quick Note</button>
+      <button data-mode="profile" class="mode-btn px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors">User Badge</button>
+    </div>
+
+    <!-- Center Stage Container -->
+    <div class="relative flex items-center justify-center min-h-[360px] w-full">
+      <div class="absolute inset-0 bg-[radial-gradient(#38bdf812_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none"></div>
+
+      <!-- Morphing Surface Box -->
+      <div id="enhanced-box" class="morph-container relative flex flex-col justify-center items-center overflow-hidden border border-slate-800 bg-slate-900/90 backdrop-blur-xl shadow-xl rounded-full w-[140px] h-[42px] cursor-pointer hover:border-slate-700 hover:shadow-sky-500/5">
+        
+        <!-- Collapsed Trigger Button State -->
+        <div id="enhanced-trigger" class="absolute inset-0 flex items-center justify-center gap-2 px-4 text-xs font-semibold tracking-wide text-slate-200 transition-opacity duration-200 select-none">
+          <i data-lucide="sliders" class="w-3.5 h-3.5 text-sky-400" id="trigger-icon"></i>
+          <span id="trigger-label">Open Popover</span>
+        </div>
+
+        <!-- 1. Dimensions Variant Content -->
+        <div id="view-dimensions" class="variant-content w-[340px] p-5 flex flex-col gap-4 opacity-0 pointer-events-none transition-opacity duration-200 hidden">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">Layer Dimensions</h4>
+              <p class="text-xs text-slate-400">Specify canvas bounding box metrics.</p>
+            </div>
+            <button class="close-trigger p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="grid gap-2 text-xs">
+            <div class="grid grid-cols-3 items-center gap-3">
+              <label class="text-slate-400 font-medium">Width</label>
+              <input type="text" value="100%" class="col-span-2 h-8 px-2.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-sky-500 font-mono text-[11px]" />
+            </div>
+            <div class="grid grid-cols-3 items-center gap-3">
+              <label class="text-slate-400 font-medium">Max Width</label>
+              <input type="text" value="384px" class="col-span-2 h-8 px-2.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-sky-500 font-mono text-[11px]" />
+            </div>
+            <div class="grid grid-cols-3 items-center gap-3">
+              <label class="text-slate-400 font-medium">Height</label>
+              <input type="text" value="auto" class="col-span-2 h-8 px-2.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-sky-500 font-mono text-[11px]" />
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-800/80 flex justify-end gap-2">
+            <button class="close-trigger px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Cancel</button>
+            <button class="close-trigger px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-sky-500 hover:bg-sky-400 transition-colors shadow-lg shadow-sky-500/20">Apply</button>
+          </div>
+        </div>
+
+        <!-- 2. Quick Note Variant Content -->
+        <div id="view-note" class="variant-content w-[340px] p-5 flex flex-col gap-3 opacity-0 pointer-events-none transition-opacity duration-200 hidden">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-semibold text-white flex items-center gap-2">
+              <i data-lucide="edit-3" class="w-4 h-4 text-sky-400"></i>
+              Add Quick Note
+            </h4>
+            <button class="close-trigger p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <textarea placeholder="Write remarks, annotations, or instructions..." class="w-full h-24 p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 resize-none focus:outline-none focus:border-sky-500"></textarea>
+          <div class="flex justify-between items-center pt-1">
+            <span class="text-[11px] text-slate-500 font-mono">Markdown supported</span>
+            <button class="close-trigger px-3.5 py-1.5 rounded-lg text-xs font-medium text-white bg-emerald-500 hover:bg-emerald-400 transition-colors">Save Note</button>
+          </div>
+        </div>
+
+        <!-- 3. Profile Badge Variant Content -->
+        <div id="view-profile" class="variant-content w-[300px] p-5 flex flex-col items-center text-center gap-3 opacity-0 pointer-events-none transition-opacity duration-200 hidden">
+          <div class="relative">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500 p-0.5">
+              <div class="w-full h-full rounded-full bg-slate-950 flex items-center justify-center font-bold text-sky-400 text-lg">
+                LS
+              </div>
+            </div>
+            <span class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-900"></span>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-white">Logan Solaman</h4>
+            <p class="text-xs text-slate-400 font-mono mt-0.5">Founder & Systems Architect</p>
+          </div>
+          <div class="w-full flex items-center justify-center gap-2 pt-2 border-t border-slate-800/80">
+            <button class="close-trigger w-full py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors">Profile</button>
+            <button class="close-trigger w-full py-1.5 rounded-lg text-xs font-medium bg-sky-500/15 hover:bg-sky-500/25 text-sky-400 border border-sky-500/30 transition-colors">Settings</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-6xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-500">
+    <div>Original design by @ibelick • Fluid layout morphing</div>
+    <div class="font-mono">Vanilla CSS Springs • Zero Motion Library</div>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>
