@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spinning Border Button (Enhanced Design System)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @property --beam-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @keyframes rotate-beam {
+      to {
+        --beam-angle: 360deg;
+      }
+    }
+    .beam-spinning {
+      animation: rotate-beam 3s linear infinite;
+    }
+    .custom-conic {
+      background: conic-gradient(from var(--beam-angle, 0deg) at 50% 50%, transparent 0%, transparent 70%, var(--beam-color, #38bdf8) 100%);
+    }
+  </style>
+</head>
+<body class="bg-[#080c14] text-slate-100 min-h-screen flex flex-col justify-between font-sans selection:bg-sky-400 selection:text-black p-4 md:p-8">
+
+  <!-- Top bar -->
+  <header class="w-full max-w-6xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/25">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">spinning-border-button_enhanced</h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-mono text-slate-500">Interactive Studio Demo</span>
+    </div>
+  </header>
+
+  <!-- Main Showcase Container -->
+  <main class="w-full max-w-6xl mx-auto flex-1 flex flex-col lg:flex-row items-center justify-center gap-12 my-8">
+    
+    <!-- Hero Button Display Stage -->
+    <div class="flex-1 flex flex-col items-center justify-center relative py-16 px-8 rounded-2xl bg-gradient-to-b from-slate-900/50 to-slate-950/80 border border-slate-800/80 shadow-2xl w-full">
+      <div class="absolute inset-0 bg-[radial-gradient(#38bdf812_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none rounded-2xl"></div>
+
+      <!-- The Dynamic Spinning Border Button -->
+      <div class="relative z-10 flex flex-col items-center gap-6">
+        <button id="demo-btn" class="group inline-flex overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_35px_var(--glow-color,rgba(56,189,248,0.3))] active:scale-95 rounded-full p-[1.5px] relative items-center justify-center cursor-pointer">
+          <!-- Animated Conic Beam -->
+          <span id="beam-layer" class="absolute inset-[-100%] animate-[spin_2.8s_linear_infinite] opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_70%,#38bdf8_100%)]"></span>
+          
+          <!-- Base Static Border -->
+          <span id="base-border" class="absolute inset-0 rounded-full bg-slate-800 transition-opacity duration-300 group-hover:opacity-0"></span>
+
+          <!-- Interior Surface -->
+          <span id="btn-interior" class="flex items-center justify-center gap-2.5 uppercase transition-all duration-300 group-hover:text-white text-xs font-semibold text-slate-300 tracking-widest bg-gradient-to-b from-slate-800/90 to-slate-950/95 w-full h-full rounded-full py-3 px-8 relative shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-md">
+            <!-- Optional leading icon -->
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-sky-400 group-hover:rotate-12 transition-transform duration-300" id="leading-icon"></i>
+            <span class="relative z-10" id="btn-text">REQUEST DEMO</span>
+            <!-- Trailing arrow -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 transition-transform duration-300 group-hover:translate-x-1" id="trailing-icon">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </span>
+        </button>
+
+        <!-- Click Feedback Toast/Indicator -->
+        <div id="click-feedback" class="text-xs font-mono text-emerald-400 opacity-0 transition-opacity duration-300 flex items-center gap-1.5">
+          <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+          <span>Action Triggered</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Customizer Controls Panel -->
+    <div class="w-full lg:w-96 flex flex-col gap-6 p-6 rounded-2xl bg-slate-900/40 border border-slate-800 text-sm">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h2 class="font-semibold text-slate-200">Interactive Controls</h2>
+        <span class="text-xs font-mono text-slate-500">Live Config</span>
+      </div>
+
+      <!-- Color Preset Themes -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-mono uppercase tracking-wider text-slate-400">Beam Color Theme</label>
+        <div class="grid grid-cols-4 gap-2">
+          <button data-theme="cyan" class="theme-chip active py-1.5 px-2 rounded-lg border border-sky-500/40 bg-sky-500/10 text-sky-400 text-xs font-medium text-center hover:border-sky-500 transition-colors">Cyan</button>
+          <button data-theme="white" class="theme-chip py-1.5 px-2 rounded-lg border border-slate-700 bg-slate-800/40 text-slate-300 text-xs font-medium text-center hover:border-slate-500 transition-colors">White</button>
+          <button data-theme="emerald" class="theme-chip py-1.5 px-2 rounded-lg border border-slate-700 bg-slate-800/40 text-slate-300 text-xs font-medium text-center hover:border-emerald-500 transition-colors">Emerald</button>
+          <button data-theme="violet" class="theme-chip py-1.5 px-2 rounded-lg border border-slate-700 bg-slate-800/40 text-slate-300 text-xs font-medium text-center hover:border-violet-500 transition-colors">Violet</button>
+        </div>
+      </div>
+
+      <!-- Spin Speed Slider -->
+      <div class="flex flex-col gap-2">
+        <div class="flex justify-between items-center text-xs">
+          <label class="font-mono uppercase tracking-wider text-slate-400">Rotation Speed</label>
+          <span id="speed-val" class="font-mono text-slate-300">2.8s</span>
+        </div>
+        <input id="speed-slider" type="range" min="1" max="6" step="0.2" value="2.8" class="w-full accent-sky-400 bg-slate-800 rounded-lg cursor-pointer" />
+      </div>
+
+      <!-- Always Active vs Hover Toggle -->
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-semibold text-slate-200">Always Spin Beam</div>
+          <div class="text-[11px] text-slate-500">Show animation without hover state</div>
+        </div>
+        <input type="checkbox" id="always-spin-toggle" class="w-4 h-4 accent-sky-400 rounded cursor-pointer" />
+      </div>
+
+      <!-- Button Text Input -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-mono uppercase tracking-wider text-slate-400">Button Label</label>
+        <input type="text" id="label-input" value="Request Demo" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 transition-colors" />
+      </div>
+
+      <!-- Copy Vanilla Code -->
+      <button id="copy-code-btn" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors">
+        <i data-lucide="copy" class="w-4 h-4"></i>
+        <span>Copy HTML/CSS Code</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Bottom Details -->
+  <footer class="w-full max-w-6xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800/80 text-xs text-slate-500">
+    <div>Original author @mengto • Conic gradient hover beam</div>
+    <div class="font-mono">Pure CSS Animation • Zero Build Step</div>
+  </footer>
+
+  <script>
+    const THEMES = {
+      cyan: {
+        gradient: "conic-gradient(from 90deg at 50% 50%, transparent 0%, transparent 70%, #38bdf8 100%)",
+        glow: "rgba(56, 189, 248, 0.35)",
+        iconColor: "text-sky-400"
+      },
+      white: {
+        gradient: "conic-gradient(from 90deg at 50% 50%, transparent 0%, transparent 75%, #ffffff 100%)",
+        glow: "rgba(255, 255, 255, 0.2)",
+        iconColor: "text-white"
+      },
+      emerald: {
+        gradient: "conic-gradient(from 90deg at 50% 50%, transparent 0%, transparent 70%, #34d399 100%)",
+        glow: "rgba(52, 211, 153, 0.35)",
+        iconColor: "text-emerald-400"
+      },
+      violet: {
+        gradient: "conic-gradient(from 90deg at 50% 50%, transparent 0%, transparent 70%, #a855f7 100%)",
+        glow: "rgba(168, 85, 247, 0.35)",
+        iconColor: "text-purple-400"
+      }
+    };
+
+    const demoBtn = document.getElementById("demo-btn");
+    const beamLayer = document.getElementById("beam-layer");
+    const baseBorder = document.getElementById("base-border");
+    const btnText = document.getElementById("btn-text");
+    const leadingIcon = document.getElementById("leading-icon");
+    const speedSlider = document.getElementById("speed-slider");
+    const speedVal = document.getElementById("speed-val");
+    const alwaysSpinToggle = document.getElementById("always-spin-toggle");
+    const labelInput = document.getElementById("label-input");
+    const copyCodeBtn = document.getElementById("copy-code-btn");
+    const clickFeedback = document.getElementById("click-feedback");
+    const themeChips = document.querySelectorAll(".theme-chip");
+
+    let currentTheme = "cyan";
+
+    function applyTheme(name) {
+      currentTheme = name;
+      const theme = THEMES[name];
+      beamLayer.style.background = theme.gradient;
+      demoBtn.style.setProperty("--glow-color", theme.glow);
+
+      themeChips.forEach(chip => {
+        if (chip.dataset.theme === name) {
+          chip.classList.add("border-sky-500", "bg-sky-500/10", "text-sky-400");
+          chip.classList.remove("border-slate-700", "bg-slate-800/40", "text-slate-300");
+        } else {
+          chip.classList.remove("border-sky-500", "bg-sky-500/10", "text-sky-400");
+          chip.classList.add("border-slate-700", "bg-slate-800/40", "text-slate-300");
+        }
+      });
+    }
+
+    themeChips.forEach(chip => {
+      chip.addEventListener("click", () => applyTheme(chip.dataset.theme));
+    });
+
+    speedSlider.addEventListener("input", (e) => {
+      const val = e.target.value;
+      speedVal.textContent = `${val}s`;
+      beamLayer.style.animationDuration = `${val}s`;
+    });
+
+    alwaysSpinToggle.addEventListener("change", (e) => {
+      if (e.target.checked) {
+        beamLayer.classList.remove("opacity-0");
+        beamLayer.classList.add("opacity-100");
+        baseBorder.classList.add("opacity-0");
+      } else {
+        beamLayer.classList.add("opacity-0");
+        beamLayer.classList.remove("opacity-100");
+        baseBorder.classList.remove("opacity-0");
+      }
+    });
+
+    labelInput.addEventListener("input", (e) => {
+      btnText.textContent = e.target.value || "REQUEST DEMO";
+    });
+
+    demoBtn.addEventListener("click", () => {
+      clickFeedback.classList.remove("opacity-0");
+      setTimeout(() => {
+        clickFeedback.classList.add("opacity-0");
+      }, 1500);
+    });
+
+    copyCodeBtn.addEventListener("click", () => {
+      const snippet = `<button class="group inline-flex overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] rounded-full p-[1px] relative items-center justify-center cursor-pointer">
+  <span class="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_75%,#ffffff_100%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
+  <span class="absolute inset-0 rounded-full bg-zinc-800 transition-opacity duration-300 group-hover:opacity-0"></span>
+  <span class="flex items-center justify-center gap-2 uppercase transition-colors duration-300 group-hover:text-white text-xs font-medium text-zinc-400 tracking-widest bg-gradient-to-b from-zinc-800 to-zinc-950 w-full h-full rounded-full py-2.5 px-6 relative shadow-[inset_0_1px_0_rgba(255,255,255,0.3)]">
+    <span class="relative z-10">${btnText.textContent}</span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5">
+      <path d="M5 12h14"></path>
+      <path d="m12 5 7 7-7 7"></path>
+    </svg>
+  </span>
+</button>`;
+
+      navigator.clipboard.writeText(snippet).then(() => {
+        copyCodeBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-emerald-400"></i><span class="text-emerald-400">Copied to Clipboard!</span>`;
+        if (window.lucide) window.lucide.createIcons();
+        setTimeout(() => {
+          copyCodeBtn.innerHTML = `<i data-lucide="copy" class="w-4 h-4"></i><span>Copy HTML/CSS Code</span>`;
+          if (window.lucide) window.lucide.createIcons();
+        }, 2000);
+      });
+    });
+
+    applyTheme("cyan");
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>
