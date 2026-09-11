@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter Scrubber - Ruixen UI (1:1 Clone)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: 'var(--background)',
+            foreground: 'var(--foreground)',
+            card: 'var(--card)',
+            'card-foreground': 'var(--card-foreground)',
+            popover: 'var(--popover)',
+            'popover-foreground': 'var(--popover-foreground)',
+            primary: 'var(--primary)',
+            'primary-foreground': 'var(--primary-foreground)',
+            muted: 'var(--muted)',
+            'muted-foreground': 'var(--muted-foreground)',
+            border: 'var(--border)',
+            ring: 'var(--ring)',
+          },
+          borderRadius: {
+            '2xl': '1rem',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --background: oklch(100% 0 0);
+      --foreground: oklch(14.5% 0 0);
+      --card: oklch(100% 0 0);
+      --card-foreground: oklch(14.5% 0 0);
+      --popover: oklch(100% 0 0);
+      --popover-foreground: oklch(14.5% 0 0);
+      --primary: oklch(20.5% 0 0);
+      --primary-foreground: oklch(98.5% 0 0);
+      --muted: oklch(97% 0 0);
+      --muted-foreground: oklch(55.6% 0 0);
+      --border: oklch(92.2% 0 0);
+      --ring: oklch(70.8% 0 0);
+    }
+    html.dark {
+      --background: oklch(14.5% 0 0);
+      --foreground: oklch(98.5% 0 0);
+      --card: oklch(20.5% 0 0);
+      --card-foreground: oklch(98.5% 0 0);
+      --popover: oklch(20.5% 0 0);
+      --popover-foreground: oklch(98.5% 0 0);
+      --primary: oklch(92.2% 0 0);
+      --primary-foreground: oklch(20.5% 0 0);
+      --muted: oklch(26.9% 0 0);
+      --muted-foreground: oklch(70.8% 0 0);
+      --border: oklch(100% 0 0 / 0.1);
+      --ring: oklch(55.6% 0 0);
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+    }
+    .scrubber-tick {
+      transition: width 0.05s ease-out, opacity 0.05s ease-out, transform 0.05s ease-out;
+      transform-origin: left center;
+    }
+    [dir="rtl"] .scrubber-tick, .rail-align-right .scrubber-tick {
+      transform-origin: right center;
+    }
+    .preview-card {
+      transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-center items-center select-none bg-background text-foreground transition-colors duration-200">
+
+  <!-- Optional Theme Switcher for testing in top right -->
+  <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
+    <button id="theme-toggle" class="px-3 py-1.5 text-xs font-medium border border-border rounded-lg bg-popover text-foreground shadow-sm hover:bg-muted transition-colors">
+      Toggle Dark / Light
+    </button>
+  </div>
+
+  <div class="flex min-h-[400px] w-full items-center justify-center bg-background px-6 py-12">
+    <!-- Chapter Scrubber Host Container -->
+    <div id="scrubber-root" class="relative" style="width: 56px;"></div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

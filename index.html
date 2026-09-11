@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>21st.dev Component Clones & Enhanced Showcase</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: '#6366f1',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0b0c10;
+      color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .grid-card {
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .grid-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.2);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center px-4 py-8 md:py-12 selection:bg-indigo-500/30">
+
+  <!-- Header -->
+  <header class="w-full max-w-6xl mb-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+          Pure Vanilla HTML / CSS / JS
+        </span>
+        <span class="px-2 py-0.5 rounded-full text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          Mobile Ready
+        </span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-white">21st.dev Component Gallery</h1>
+      <p class="text-sm text-gray-400 mt-1 max-w-2xl">
+        High-fidelity 1-to-1 clones alongside enhanced responsive editions crafted with zero build steps.
+      </p>
+    </div>
+
+    <!-- Quick filter / search -->
+    <div class="flex items-center gap-3 w-full md:w-auto">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Filter components..."
+        class="w-full md:w-64 px-3.5 py-2 text-sm rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 outline-none focus:border-indigo-500 transition-colors"
+      />
+    </div>
+  </header>
+
+  <!-- Gallery Grid -->
+  <main id="components-grid" class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Rendered via script -->
+  </main>
+
+  <footer class="w-full max-w-6xl mt-16 pt-6 border-t border-white/10 text-center text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <span>Crafted with zero build steps for rapid inspection and mobile testing.</span>
+    <a href="https://github.com/logansolaman/21st.dev-clone" target="_blank" class="text-indigo-400 hover:underline">GitHub Repository</a>
+  </footer>
+
+  <script>
+    const COMPONENTS = [
+      {
+        id: "chapter-scrubber",
+        title: "Chapter Scrubber",
+        author: "@ruixen.ui",
+        category: "Navigation / Scrubber",
+        hasEnhanced: true,
+        desc: "Vertical rail of uniform ticks magnifying toward cursor like a dock with raised-cosine falloff and preview card."
+      },
+      {
+        id: "card-fan-carousel",
+        title: "Card Fan Carousel",
+        author: "Community",
+        category: "Carousel / Showcase",
+        hasEnhanced: true,
+        desc: "Interactive 3D fanned card deck with circular layout, smooth cycling, and keyboard / arrow navigation."
+      },
+      {
+        id: "admit-one-ticket",
+        title: "Admit One Ticket",
+        author: "Community",
+        category: "Cards",
+        hasEnhanced: true,
+        desc: "Perforated vintage admission pass with realistic stub tear and interactive lighting."
+      },
+      {
+        id: "animated-search-bar",
+        title: "Animated Search Bar",
+        author: "Community",
+        category: "Inputs",
+        hasEnhanced: true,
+        desc: "Morphing search input with dynamic state transitions and animated action triggers."
+      },
+      {
+        id: "3d-card",
+        title: "3D Parallax Card",
+        author: "Community",
+        category: "Cards",
+        hasEnhanced: true,
+        desc: "Multi-layer optical depth card with real-time perspective tilt and mouse-following glare."
+      },
+      {
+        id: "clean-minimal-sign-in",
+        title: "Clean Minimal Sign In",
+        author: "Community",
+        category: "Forms / Auth",
+        hasEnhanced: true,
+        desc: "Streamlined modern authentication card with minimal borders and subtle focus rings."
+      },
+      {
+        id: "coupon-reveal-button",
+        title: "Coupon Reveal Button",
+        author: "Community",
+        category: "Buttons / eCommerce",
+        hasEnhanced: true,
+        desc: "Scratch-to-reveal voucher code with peelable dogear folds and copy feedback."
+      },
+      {
+        id: "dashboard-1",
+        title: "Executive Dashboard",
+        author: "Community",
+        category: "Dashboards",
+        hasEnhanced: true,
+        desc: "Modern analytics control center with stats badges, activity feeds, and metric sparklines."
+      },
+      {
+        id: "glass-testimonial-swiper",
+        title: "Glass Testimonial Swiper",
+        author: "Community",
+        category: "Social Proof",
+        hasEnhanced: true,
+        desc: "Frosted glass testimonial cards with touch gestures and blur backdrop reflections."
+      },
+      {
+        id: "image-stream-hero",
+        title: "Image Stream Hero",
+        author: "Community",
+        category: "Heroes",
+        hasEnhanced: false,
+        desc: "Dynamic streaming columns of imagery creating immersive hero backgrounds."
+      },
+      {
+        id: "liquid-metal-button",
+        title: "Liquid Metal Button",
+        author: "Community",
+        category: "Buttons",
+        hasEnhanced: true,
+        desc: "Organic fluid metallic shader button with visceral reactive surface motion."
+      },
+      {
+        id: "menu-toggle-icon",
+        title: "Morphing Menu Toggle",
+        author: "Community",
+        category: "Navigation / Icons",
+        hasEnhanced: true,
+        desc: "Continuous SVG dasharray morph between hamburger menu bars and close 'X' mark."
+      },
+      {
+        id: "morphing-popover",
+        title: "Morphing Popover",
+        author: "Community",
+        category: "Overlays",
+        hasEnhanced: true,
+        desc: "Spring-animated bounding box layout morph expanding from compact pill to rich form."
+      },
+      {
+        id: "motion-btn",
+        title: "Motion Button",
+        author: "Community",
+        category: "Buttons",
+        hasEnhanced: true,
+        desc: "Tactile micro-interaction button with physics-based spring displacement."
+      },
+      {
+        id: "navigation-menu",
+        title: "Fluid Navigation Menu",
+        author: "Community",
+        category: "Navigation",
+        hasEnhanced: true,
+        desc: "Sliding pill indicator tracking hovered menu items with smooth inertia."
+      },
+      {
+        id: "pricing-card",
+        title: "Tiered Pricing Card",
+        author: "Community",
+        category: "eCommerce",
+        hasEnhanced: true,
+        desc: "Branded SaaS pricing tier with feature checklists, annual toggle, and primary CTA."
+      },
+      {
+        id: "product-card",
+        title: "eCommerce Product Card",
+        author: "Community",
+        category: "eCommerce",
+        hasEnhanced: true,
+        desc: "Interactive catalog card featuring color swatch selection and quick-add actions."
+      },
+      {
+        id: "radial-orbital-timeline",
+        title: "Radial Orbital Timeline",
+        author: "Community",
+        category: "Timelines",
+        hasEnhanced: true,
+        desc: "Concentric trigonometric timeline nodes revolving with depth-based opacity."
+      },
+      {
+        id: "spinning-border-button",
+        title: "Spinning Border Button",
+        author: "Community",
+        category: "Buttons",
+        hasEnhanced: true,
+        desc: "Conic gradient beam revolving along perimeter with smooth masking."
+      },
+      {
+        id: "swipe-deck",
+        title: "Gesture Swipe Deck",
+        author: "Community",
+        category: "Gestures / Cards",
+        hasEnhanced: false,
+        desc: "Tinder-style drag-to-dismiss interactive card stack with rotation falloff."
+      }
+    ];
+
+    function renderCards(filter = "") {
+      const grid = document.getElementById("components-grid");
+      grid.innerHTML = "";
+
+      const query = filter.toLowerCase().trim();
+      const filtered = COMPONENTS.filter(c => 
+        c.title.toLowerCase().includes(query) ||
+        c.category.toLowerCase().includes(query) ||
+        c.desc.toLowerCase().includes(query) ||
+        c.id.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full py-16 text-center text-gray-500">No components match "${filter}".</div>`;
+        return;
+      }
+
+      filtered.forEach(comp => {
+        const card = document.createElement("div");
+        card.className = "grid-card flex flex-col bg-white/[0.03] border border-white/10 rounded-2xl overflow-hidden shadow-lg";
+
+        const cloneImg = `screenshots/${comp.id}.png`;
+        const enhancedImg = `screenshots/${comp.id}_enhanced.png`;
+
+        card.innerHTML = `
+          <!-- Preview Screenshot Thumbnail -->
+          <div class="relative w-full h-44 bg-black/40 overflow-hidden border-b border-white/10 group">
+            <img
+              src="${cloneImg}"
+              alt="${comp.title}"
+              class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+              onerror="this.style.display='none'"
+            />
+            <div class="absolute top-2.5 right-2.5 flex gap-1.5">
+              <span class="px-2 py-0.5 text-[10px] font-mono uppercase font-semibold rounded bg-black/60 backdrop-blur-md text-gray-300 border border-white/10">
+                ${comp.category}
+              </span>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-baseline justify-between gap-2">
+                <h3 class="text-base font-semibold text-white tracking-tight">${comp.title}</h3>
+                <span class="text-[11px] text-gray-500 font-mono">${comp.author}</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-1.5 line-clamp-2 leading-relaxed">
+                ${comp.desc}
+              </p>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="mt-4 pt-3 border-t border-white/5 flex items-center gap-2">
+              <a
+                href="./${comp.id}/index.html"
+                class="flex-1 py-1.5 px-3 text-center text-xs font-medium rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/10 transition-colors"
+              >
+                1:1 Clone
+              </a>
+              ${
+                comp.hasEnhanced
+                  ? `<a
+                      href="./${comp.id}_enhanced/index.html"
+                      class="flex-1 py-1.5 px-3 text-center text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors"
+                    >
+                      Enhanced
+                    </a>`
+                  : ""
+              }
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    // Initial render
+    renderCards();
+
+    // Search filter listener
+    document.getElementById("search-input").addEventListener("input", (e) => {
+      renderCards(e.target.value);
+    });
+  </script>
+</body>
+</html>
