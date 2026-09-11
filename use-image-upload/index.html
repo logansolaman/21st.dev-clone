@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>useImageUpload - Origin UI (1:1 Clone)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: 'var(--background)',
+            foreground: 'var(--foreground)',
+            card: 'var(--card)',
+            'card-foreground': 'var(--card-foreground)',
+            popover: 'var(--popover)',
+            'popover-foreground': 'var(--popover-foreground)',
+            primary: 'var(--primary)',
+            'primary-foreground': 'var(--primary-foreground)',
+            secondary: 'var(--secondary)',
+            'secondary-foreground': 'var(--secondary-foreground)',
+            muted: 'var(--muted)',
+            'muted-foreground': 'var(--muted-foreground)',
+            destructive: 'var(--destructive)',
+            'destructive-foreground': 'var(--destructive-foreground)',
+            border: 'var(--border)',
+            input: 'var(--input)',
+            ring: 'var(--ring)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --background: oklch(100% 0 0);
+      --foreground: oklch(14.5% 0 0);
+      --card: oklch(100% 0 0);
+      --card-foreground: oklch(14.5% 0 0);
+      --popover: oklch(100% 0 0);
+      --popover-foreground: oklch(14.5% 0 0);
+      --primary: oklch(20.5% 0 0);
+      --primary-foreground: oklch(98.5% 0 0);
+      --secondary: oklch(97% 0 0);
+      --secondary-foreground: oklch(20.5% 0 0);
+      --muted: oklch(97% 0 0);
+      --muted-foreground: oklch(55.6% 0 0);
+      --destructive: oklch(57.7% 0.245 27.325);
+      --destructive-foreground: oklch(98.5% 0 0);
+      --border: oklch(92.2% 0 0);
+      --input: oklch(92.2% 0 0);
+      --ring: oklch(70.8% 0 0);
+    }
+    html.dark {
+      --background: oklch(14.5% 0 0);
+      --foreground: oklch(98.5% 0 0);
+      --card: oklch(20.5% 0 0);
+      --card-foreground: oklch(98.5% 0 0);
+      --popover: oklch(20.5% 0 0);
+      --popover-foreground: oklch(98.5% 0 0);
+      --primary: oklch(98.5% 0 0);
+      --primary-foreground: oklch(20.5% 0 0);
+      --secondary: oklch(26.9% 0 0);
+      --secondary-foreground: oklch(98.5% 0 0);
+      --muted: oklch(26.9% 0 0);
+      --muted-foreground: oklch(70.8% 0 0);
+      --destructive: oklch(70.4% 0.191 22.216);
+      --destructive-foreground: oklch(98.5% 0 0);
+      --border: oklch(100% 0 0 / 0.1);
+      --input: oklch(100% 0 0 / 0.15);
+      --ring: oklch(55.6% 0 0);
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+    }
+    .dot-pattern {
+      background-image: radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+    html.dark .dot-pattern {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6 bg-background text-foreground transition-colors duration-200 select-none relative overflow-hidden">
+
+  <!-- Dot background pattern -->
+  <div class="dot-pattern absolute inset-0 pointer-events-none"></div>
+
+  <!-- Theme Toggle -->
+  <div class="fixed top-4 right-4 z-50">
+    <button id="theme-toggle" class="px-3 py-1.5 text-xs font-medium border border-border rounded-lg bg-card text-card-foreground shadow-sm hover:opacity-80 transition-opacity">
+      Toggle Theme
+    </button>
+  </div>
+
+  <!-- Card Container -->
+  <div class="relative z-10 w-full max-w-md space-y-6 rounded-xl border border-border bg-card p-6 shadow-sm">
+    <div class="space-y-2">
+      <h3 class="text-lg font-medium">Image Upload</h3>
+      <p class="text-sm text-muted-foreground">Supported formats: JPG, PNG, GIF</p>
+    </div>
+
+    <!-- Hidden native file input -->
+    <input
+      type="file"
+      accept="image/*"
+      id="file-input"
+      class="hidden"
+    />
+
+    <!-- Upload Dropzone View (Initial state) -->
+    <div
+      id="dropzone"
+      class="flex h-64 cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 transition-colors hover:bg-muted"
+    >
+      <div class="rounded-full bg-background p-3 shadow-sm text-muted-foreground">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 5h6"/>
+          <path d="M19 2v6"/>
+          <path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/>
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+          <circle cx="9" cy="9" r="2"/>
+        </svg>
+      </div>
+      <div class="text-center">
+        <p class="text-sm font-medium">Click to select</p>
+        <p class="text-xs text-muted-foreground mt-0.5">or drag and drop file here</p>
+      </div>
+    </div>
+
+    <!-- Preview View (Visible after upload) -->
+    <div id="preview-area" class="relative hidden">
+      <div class="group relative h-64 overflow-hidden rounded-lg border border-border">
+        <img
+          id="preview-img"
+          src=""
+          alt="Preview"
+          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"></div>
+        <div class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            id="btn-reupload"
+            type="button"
+            class="inline-flex items-center justify-center h-9 w-9 p-0 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors shadow-sm"
+            title="Upload new image"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v12"/>
+              <path d="m17 8-5-5-5 5"/>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            </svg>
+          </button>
+          <button
+            id="btn-remove"
+            type="button"
+            class="inline-flex items-center justify-center h-9 w-9 p-0 rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors shadow-sm"
+            title="Delete image"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 11v6"/>
+              <path d="M14 11v6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+              <path d="M3 6h18"/>
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+        <span id="file-name" class="truncate">image.png</span>
+        <button id="btn-remove-inline" class="ml-auto rounded-full p-1 hover:bg-muted transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

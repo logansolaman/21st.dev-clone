@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ticket Confirmation Card - Ravi Katiyar (1:1 Clone)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: 'var(--background)',
+            foreground: 'var(--foreground)',
+            card: 'var(--card)',
+            'card-foreground': 'var(--card-foreground)',
+            muted: 'var(--muted)',
+            'muted-foreground': 'var(--muted-foreground)',
+            primary: 'var(--primary)',
+            'primary-foreground': 'var(--primary-foreground)',
+            border: 'var(--border)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --background: oklch(98% 0 0);
+      --foreground: oklch(14.5% 0 0);
+      --card: oklch(100% 0 0);
+      --card-foreground: oklch(14.5% 0 0);
+      --muted: oklch(97% 0 0);
+      --muted-foreground: oklch(55.6% 0 0);
+      --primary: oklch(55% 0.2 145); /* Emerald / Green confirmation accent */
+      --primary-foreground: oklch(98.5% 0 0);
+      --border: oklch(92.2% 0 0);
+    }
+    html.dark {
+      --background: oklch(14.5% 0 0);
+      --foreground: oklch(98.5% 0 0);
+      --card: oklch(20.5% 0 0);
+      --card-foreground: oklch(98.5% 0 0);
+      --muted: oklch(26.9% 0 0);
+      --muted-foreground: oklch(70.8% 0 0);
+      --primary: oklch(65% 0.22 145);
+      --primary-foreground: oklch(20.5% 0 0);
+      --border: oklch(100% 0 0 / 0.1);
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .ticket-notch-left {
+      position: absolute;
+      left: -1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2rem;
+      height: 2rem;
+      border-radius: 9999px;
+      background-color: var(--background);
+    }
+    .ticket-notch-right {
+      position: absolute;
+      right: -1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2rem;
+      height: 2rem;
+      border-radius: 9999px;
+      background-color: var(--background);
+    }
+    .dashed-divider {
+      border-top: 2px dashed var(--border);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 bg-background text-foreground transition-colors duration-200 select-none">
+
+  <!-- Theme Toggle & Replay Confetti -->
+  <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
+    <button id="btn-replay" class="px-3 py-1.5 text-xs font-medium border border-border rounded-lg bg-card text-card-foreground shadow-sm hover:opacity-80 transition-opacity">
+      Replay Confetti 🎉
+    </button>
+    <button id="theme-toggle" class="px-3 py-1.5 text-xs font-medium border border-border rounded-lg bg-muted text-foreground shadow-sm hover:opacity-80 transition-opacity">
+      Theme
+    </button>
+  </div>
+
+  <!-- Confetti Canvas Container -->
+  <div id="confetti-container" class="pointer-events-none fixed inset-0 z-50 overflow-hidden"></div>
+
+  <!-- Ticket Container -->
+  <div class="relative w-full max-w-sm bg-card text-card-foreground rounded-2xl shadow-2xl font-sans z-10 transition-all">
+    
+    <!-- Notch cutouts on sides -->
+    <div class="ticket-notch-left"></div>
+    <div class="ticket-notch-right"></div>
+
+    <!-- Header & Success Check -->
+    <div class="p-8 flex flex-col items-center text-center">
+      <div class="p-3 bg-primary/10 rounded-full flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+          <path d="M20 6 9 17l-5-5"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-semibold mt-4">Thank you!</h1>
+      <p class="text-muted-foreground mt-1 text-sm">Your ticket has been issued successfully</p>
+    </div>
+
+    <!-- Details Body -->
+    <div class="px-8 pb-8 space-y-6">
+      <div class="dashed-divider"></div>
+
+      <!-- Ticket ID & Amount -->
+      <div class="grid grid-cols-2 gap-4 text-left">
+        <div>
+          <p class="text-xs text-muted-foreground uppercase tracking-wider">Ticket ID</p>
+          <p class="font-mono font-medium text-sm mt-0.5">0120034399434</p>
+        </div>
+        <div class="text-right">
+          <p class="text-xs text-muted-foreground uppercase tracking-wider">Amount</p>
+          <p class="font-semibold text-lg text-foreground">$305.50</p>
+        </div>
+      </div>
+
+      <!-- Date & Time -->
+      <div>
+        <p class="text-xs text-muted-foreground uppercase tracking-wider">Date & Time</p>
+        <p class="font-medium text-sm mt-0.5">19 Jun 2025 • 10:15</p>
+      </div>
+
+      <!-- Payment Method Card -->
+      <div class="bg-muted/50 p-4 rounded-lg flex items-center space-x-4 border border-border/50">
+        <!-- Credit Card Icon -->
+        <div class="p-2 rounded-md bg-card shadow-xs text-muted-foreground">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="14" x="2" y="5" rx="2"/>
+            <line x1="2" x2="22" y1="10" y2="10"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-sm">Liana80 Tudakova</p>
+          <p class="text-muted-foreground font-mono text-xs tracking-wider mt-0.5">•••• 8237</p>
+        </div>
+      </div>
+
+      <div class="dashed-divider"></div>
+
+      <!-- Barcode Graphic -->
+      <div class="flex flex-col items-center justify-center pt-2">
+        <svg id="barcode-svg" class="w-full h-14" viewBox="0 0 260 50">
+          <!-- Dynamic barcode bars -->
+        </svg>
+        <p class="font-mono text-xs tracking-widest text-muted-foreground mt-2">
+          28937261273650
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

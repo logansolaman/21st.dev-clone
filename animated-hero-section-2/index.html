@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animated Hero Section - Ravi Katiyar (1:1 Clone)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: 'var(--background)',
+            foreground: 'var(--foreground)',
+            muted: 'var(--muted)',
+            'muted-foreground': 'var(--muted-foreground)',
+            primary: 'var(--primary)',
+            'primary-foreground': 'var(--primary-foreground)',
+            border: 'var(--border)',
+            ring: 'var(--ring)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --background: oklch(100% 0 0);
+      --foreground: oklch(14.5% 0 0);
+      --muted: oklch(97% 0 0);
+      --muted-foreground: oklch(55.6% 0 0);
+      --primary: oklch(20.5% 0 0);
+      --primary-foreground: oklch(98.5% 0 0);
+      --border: oklch(92.2% 0 0);
+      --ring: oklch(70.8% 0 0);
+    }
+    html.dark {
+      --background: oklch(14.5% 0 0);
+      --foreground: oklch(98.5% 0 0);
+      --muted: oklch(26.9% 0 0);
+      --muted-foreground: oklch(70.8% 0 0);
+      --primary: oklch(98.5% 0 0);
+      --primary-foreground: oklch(20.5% 0 0);
+      --border: oklch(100% 0 0 / 0.1);
+      --ring: oklch(55.6% 0 0);
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+    }
+    @keyframes globeSpin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .animate-globe-spin {
+      animation: globeSpin 60s linear infinite;
+    }
+    .word-slide {
+      transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+  </style>
+</head>
+<body class="min-h-screen overflow-x-hidden transition-colors duration-200">
+
+  <!-- Theme Toggle -->
+  <div class="fixed top-4 right-4 z-50">
+    <button id="theme-toggle" class="px-3 py-1.5 text-xs font-medium border border-border rounded-lg bg-muted text-foreground shadow-sm hover:opacity-80 transition-opacity">
+      Toggle Theme
+    </button>
+  </div>
+
+  <div class="w-full">
+    <section class="relative w-full min-h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-background p-4 md:p-8">
+      <div class="z-10 flex flex-col items-center space-y-6 md:space-y-8 max-w-4xl mx-auto">
+        
+        <!-- Badge -->
+        <div class="inline-flex items-center rounded-lg bg-muted px-3 py-1 text-sm font-medium text-muted-foreground border border-border">
+          🎉 #1 Product of the Day
+        </div>
+
+        <!-- Heading with Word Rotator -->
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-foreground">
+          Your all-in-one{" "}
+          <div class="inline-block relative h-[1.2em] w-[260px] sm:w-[320px] md:w-[450px] lg:w-[580px] overflow-hidden align-bottom">
+            <div id="word-rotator" class="relative w-full h-full">
+              <!-- Animated words injected via script -->
+            </div>
+            <span class="absolute bottom-0 left-0 w-full h-1 bg-primary/30 rounded-full"></span>
+          </div>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="max-w-xl text-base md:text-xl text-muted-foreground">
+          Atlas is how teams make maps and perform geospatial analysis together. Create, collaborate, share — all under one roof.
+        </p>
+
+        <!-- CTA -->
+        <a
+          href="#"
+          class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 px-8 bg-primary text-primary-foreground hover:bg-primary/90"
+        >
+          Sign up for free
+        </a>
+      </div>
+
+      <!-- Globe Graphic -->
+      <div class="absolute -bottom-[25%] md:-bottom-[40%] lg:-bottom-[50%] -z-0 w-full max-w-screen-lg opacity-40 dark:opacity-30 pointer-events-none">
+        <img
+          src="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-UbsvWWn2C9JrFY23BSpGoAekVwkvPX.png&w=640&q=75"
+          alt="Rotating Earth Globe"
+          class="w-full h-auto animate-globe-spin"
+        />
+      </div>
+    </section>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

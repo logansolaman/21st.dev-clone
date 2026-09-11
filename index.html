@@ -43,12 +43,15 @@
           Pure Vanilla HTML / CSS / JS
         </span>
         <span class="px-2 py-0.5 rounded-full text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          Mobile Ready
+          Zero Build Steps
+        </span>
+        <span id="total-badge" class="px-2 py-0.5 rounded-full text-[11px] font-mono bg-white/10 text-gray-300 border border-white/15">
+          25 Components
         </span>
       </div>
       <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-white">21st.dev Component Gallery</h1>
       <p class="text-sm text-gray-400 mt-1 max-w-2xl">
-        High-fidelity 1-to-1 clones alongside enhanced responsive editions crafted with zero build steps.
+        High-fidelity 1-to-1 clones and enhanced responsive variants reverse-engineered into standalone vanilla web artifacts.
       </p>
     </div>
 
@@ -75,6 +78,46 @@
 
   <script>
     const COMPONENTS = [
+      {
+        id: "flip-card",
+        title: "Flip Card",
+        author: "Animate UI (@Divyashri)",
+        category: "Cards / 3D",
+        hasEnhanced: false,
+        desc: "3D animated card component that flips 180 degrees on touch/hover to reveal bio, follower statistics, and social links."
+      },
+      {
+        id: "animated-hero-section-2",
+        title: "Animated Globe Hero",
+        author: "@ravikatiyar162",
+        category: "Heroes",
+        hasEnhanced: false,
+        desc: "Full-bleed hero banner featuring a rotating 3D Earth globe, animated sliding word rotator, and product badge."
+      },
+      {
+        id: "carousel-07",
+        title: "Stacked Card Carousel",
+        author: "@shadcnspace",
+        category: "Carousel / Gestures",
+        hasEnhanced: false,
+        desc: "Interactive draggable carousel that fans out cards with rotation, overlap, darkness falloff, and depth scaling."
+      },
+      {
+        id: "ticket-confirmation-card",
+        title: "Ticket Confirmation Card",
+        author: "@ravikatiyar162",
+        category: "Cards / Receipts",
+        hasEnhanced: false,
+        desc: "Perforated digital ticket with side notch cutouts, payment details, barcode graphic, and celebration confetti."
+      },
+      {
+        id: "use-image-upload",
+        title: "useImageUpload",
+        author: "@originui",
+        category: "Inputs / Media",
+        hasEnhanced: false,
+        desc: "Drag-and-drop image upload dropzone with preview thumbnail, re-upload, object URL cleanup, and removal controls."
+      },
       {
         id: "chapter-scrubber",
         title: "Chapter Scrubber",
@@ -259,7 +302,6 @@
         card.className = "grid-card flex flex-col bg-white/[0.03] border border-white/10 rounded-2xl overflow-hidden shadow-lg";
 
         const cloneImg = `screenshots/${comp.id}.png`;
-        const enhancedImg = `screenshots/${comp.id}_enhanced.png`;
 
         card.innerHTML = `
           <!-- Preview Screenshot Thumbnail -->
