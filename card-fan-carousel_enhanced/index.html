@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Card Fan Carousel (Enhanced)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --font-display: "Space Grotesk", sans-serif;
+      --font-sans: "Plus Jakarta Sans", sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background-color: #080c14;
+      background-image:
+        radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.07) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(129, 140, 248, 0.05) 0%, transparent 40%),
+        linear-gradient(to bottom, transparent, rgba(2, 6, 23, 0.95));
+    }
+    .fan-card-enhanced {
+      position: absolute;
+      width: 16rem;
+      height: 23rem;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+      transform-origin: center bottom;
+      will-change: transform, opacity;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .fan-card-enhanced:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 20px 45px -5px rgba(56, 189, 248, 0.25);
+    }
+    .fan-card-enhanced.is-active-center {
+      border-color: rgba(56, 189, 248, 0.8);
+      box-shadow: 0 25px 50px -5px rgba(56, 189, 248, 0.35);
+    }
+    @media (max-width: 768px) {
+      .fan-card-enhanced {
+        width: 11.5rem;
+        height: 16.5rem;
+        border-radius: 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden m-0 p-4 md:p-8">
+
+  <!-- Top Bar -->
+  <header class="w-full max-w-7xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800/80">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">card-fan-carousel_enhanced</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <button id="btn-autoplay" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+        <i data-lucide="play" class="w-3.5 h-3.5 text-sky-400" id="autoplay-icon"></i>
+        <span id="autoplay-text">Auto Play</span>
+      </button>
+      <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/40 text-xs text-slate-400 font-mono">
+        <span class="kbd bg-slate-800 px-1 rounded text-slate-200">←</span>
+        <span class="kbd bg-slate-800 px-1 rounded text-slate-200">→</span>
+        <span>to cycle</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Showcase Stage -->
+  <main class="w-full flex-1 flex flex-col items-center justify-center my-6">
+    <div class="w-full max-w-7xl flex items-center justify-center relative">
+      
+      <!-- Prev Button -->
+      <button id="btn-prev" aria-label="Previous card" class="relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full border border-white/10 bg-slate-900/60 backdrop-blur-md text-slate-300 hover:text-white hover:border-sky-500/50 hover:bg-slate-800/80 hover:shadow-[0_0_20px_rgba(56,189,248,0.2)] transition-all duration-300 shrink-0 z-30 mr-2 md:mr-6">
+        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Carousel Center Fan Layout -->
+      <div id="fan-container" class="relative flex justify-center items-center w-full max-w-5xl h-[28rem] md:h-[34rem]">
+        <!-- Injected Cards -->
+      </div>
+
+      <!-- Next Button -->
+      <button id="btn-next" aria-label="Next card" class="relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full border border-white/10 bg-slate-900/60 backdrop-blur-md text-slate-300 hover:text-white hover:border-sky-500/50 hover:bg-slate-800/80 hover:shadow-[0_0_20px_rgba(56,189,248,0.2)] transition-all duration-300 shrink-0 z-30 ml-2 md:ml-6">
+        <i data-lucide="chevron-right" class="w-5 h-5"></i>
+      </button>
+
+    </div>
+
+    <!-- Active Card Meta Preview Pod -->
+    <div id="active-meta-pod" class="mt-4 flex flex-col items-center text-center max-w-md px-4 transition-all duration-300">
+      <div class="flex items-center gap-2 mb-1.5">
+        <span id="active-category" class="px-2 py-0.5 rounded-full text-[10px] font-mono tracking-wider uppercase font-semibold bg-sky-500/15 text-sky-400 border border-sky-500/30">NATURE & LANDSCAPES</span>
+        <span id="active-counter" class="text-xs font-mono text-slate-500">01 / 10</span>
+      </div>
+      <h2 id="active-title" class="text-lg md:text-xl font-bold tracking-tight text-white">Mountain Landscape</h2>
+      <p id="active-desc" class="text-xs text-slate-400 mt-1 line-clamp-2">Majestic peaks rising through alpine atmosphere and high-altitude mist.</p>
+    </div>
+
+    <!-- Pagination Dots -->
+    <div id="pagination-dots" class="flex items-center gap-1.5 mt-4"></div>
+  </main>
+
+  <!-- Bottom Footer -->
+  <footer class="w-full max-w-7xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800/80 text-xs text-slate-500">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span>Smooth GSAP Elastic Fan Curve</span>
+    </div>
+    <div>Click any visible card to bring it to center</div>
+  </footer>
+
+  <!-- Lightbox Modal -->
+  <div id="lightbox-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <button id="lightbox-close" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    <div class="max-w-4xl max-h-[85vh] flex flex-col items-center">
+      <img id="lightbox-img" src="" alt="" class="rounded-xl max-h-[70vh] object-contain border border-white/20 shadow-2xl" />
+      <h3 id="lightbox-title" class="text-lg font-bold mt-4 text-white"></h3>
+      <p id="lightbox-desc" class="text-sm text-slate-300 mt-1 text-center max-w-xl"></p>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
