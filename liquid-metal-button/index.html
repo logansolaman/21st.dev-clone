@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liquid Metal Button - 1:1 Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .perspective-1000 {
+      perspective: 1000px;
+      perspective-origin: 50% 50%;
+    }
+    .preserve-3d {
+      transform-style: preserve-3d;
+    }
+    .liquid-btn-core {
+      transition: 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .liquid-btn-wrap:hover .layer-top {
+      transform: translateZ(28px) scale(1.02);
+    }
+    .liquid-btn-wrap:hover .layer-plate {
+      transform: translateZ(16px) scale(1.02);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .liquid-btn-wrap:hover .layer-base {
+      transform: translateZ(4px) scale(1.02);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    }
+    .liquid-btn-wrap:hover .btn-label {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    }
+    .liquid-btn-wrap:active .layer-top,
+    .liquid-btn-wrap:active .layer-plate,
+    .liquid-btn-wrap:active .layer-base {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center m-0 p-0 font-sans selection:bg-white selection:text-black">
+  <div class="w-screen min-h-screen flex justify-center items-center">
+    <div class="flex flex-col items-center justify-center gap-8 p-8">
+      <div class="flex items-center gap-8">
+        
+        <!-- 1:1 3D Stacked Liquid Metal Button -->
+        <div class="liquid-btn-wrap relative inline-block perspective-1000 cursor-pointer">
+          <div class="relative w-[142px] h-[46px] preserve-3d transition-transform duration-700">
+            
+            <!-- Layer 3: Label Text floating at Z: 20px -->
+            <div class="layer-top absolute top-0 left-0 w-[142px] h-[46px] flex items-center justify-center gap-1.5 preserve-3d liquid-btn-core pointer-events-none z-30" style="transform: translateZ(20px);">
+              <span class="btn-label text-sm text-[#666666] font-normal tracking-wide whitespace-nowrap transition-all duration-500" style="text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Get Started</span>
+            </div>
+
+            <!-- Layer 2: Glossy Inner Pill at Z: 10px -->
+            <div class="layer-plate absolute top-0 left-0 w-[142px] h-[46px] preserve-3d liquid-btn-core z-20" style="transform: translateZ(10px) translateY(0px) scale(1);">
+              <div class="w-[138px] h-[42px] m-[2px] rounded-full bg-gradient-to-b from-[#202020] to-[#000000] border border-white/5 shadow-inner"></div>
+            </div>
+
+            <!-- Layer 1: Base Metal Shader Canvas at Z: 0px -->
+            <div class="layer-base absolute top-0 left-0 w-[142px] h-[46px] preserve-3d liquid-btn-core z-10" style="transform: translateZ(0px) translateY(0px) scale(1);">
+              <div class="w-[142px] h-[46px] rounded-full overflow-hidden shadow-[0_0_0_1px_rgba(0,0,0,0.3),0_20px_12px_0_rgba(0,0,0,0.08),0_9px_9px_0_rgba(0,0,0,0.12),0_2px_5px_0_rgba(0,0,0,0.15)] relative">
+                <canvas id="metal-canvas" width="142" height="46" class="w-full h-full block rounded-full"></canvas>
+              </div>
+            </div>
+
+            <!-- Invisible Click Trigger -->
+            <button aria-label="Get Started" class="absolute top-0 left-0 w-[142px] h-[46px] bg-transparent border-none cursor-pointer outline-none z-40 preserve-3d" style="transform: translateZ(25px);"></button>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

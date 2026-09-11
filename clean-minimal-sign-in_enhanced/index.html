@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clean & Minimal Sign In (Enhanced Suite)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8 antialiased selection:bg-sky-500 selection:text-black">
+
+  <!-- Top bar -->
+  <header class="w-full max-w-5xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/25">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">clean-minimal-sign-in_enhanced</h1>
+    </div>
+    <div class="text-xs font-mono text-slate-500">Accessible Multi-theme Auth Flow</div>
+  </header>
+
+  <!-- Main Showcase Container -->
+  <main class="w-full max-w-5xl mx-auto flex-1 flex flex-col items-center justify-center my-8">
+    
+    <div class="w-full max-w-sm bg-gradient-to-b from-slate-900/90 to-slate-950/95 rounded-3xl shadow-2xl p-8 flex flex-col items-center border border-slate-800 relative">
+      <div class="absolute -top-12 inset-x-0 flex justify-center pointer-events-none">
+        <div class="w-48 h-24 bg-sky-500/10 blur-3xl rounded-full"></div>
+      </div>
+
+      <!-- Icon Header -->
+      <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-800/80 mb-6 shadow-inner border border-slate-700/50">
+        <i data-lucide="sparkles" class="w-6 h-6 text-sky-400"></i>
+      </div>
+
+      <h2 class="text-xl font-bold mb-1.5 text-center text-white">Welcome back</h2>
+      <p class="text-slate-400 text-xs mb-6 text-center leading-relaxed">
+        Connect your workflow across boards, documents, and real-time agents.
+      </p>
+
+      <!-- Auth Form with Validation and Password Strength Indicator -->
+      <form id="auth-form" class="w-full flex flex-col gap-3.5 mb-2">
+        
+        <!-- Email Input -->
+        <div class="flex flex-col gap-1">
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500">
+              <i data-lucide="mail" class="w-4 h-4"></i>
+            </span>
+            <input id="auth-email" placeholder="name@company.com" class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-sky-500 bg-slate-900/50 text-white text-xs placeholder:text-slate-600 transition-colors" type="email" required />
+          </div>
+          <span id="email-error" class="text-[11px] text-rose-400 hidden pl-1">Please enter a valid email address</span>
+        </div>
+
+        <!-- Password Input -->
+        <div class="flex flex-col gap-1">
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500">
+              <i data-lucide="lock" class="w-4 h-4"></i>
+            </span>
+            <input id="auth-password" placeholder="Password (min. 8 characters)" class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-sky-500 bg-slate-900/50 text-white text-xs placeholder:text-slate-600 transition-colors" type="password" required />
+            <button id="toggle-auth-pw" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors p-0.5" aria-label="Toggle password visibility">
+              <i data-lucide="eye" class="w-4 h-4" id="eye-icon"></i>
+            </button>
+          </div>
+
+          <!-- Live Password Strength Bar -->
+          <div class="w-full h-1 bg-slate-800 rounded-full mt-1 overflow-hidden">
+            <div id="pw-strength-bar" class="h-full w-0 bg-rose-500 transition-all duration-300"></div>
+          </div>
+        </div>
+
+        <!-- Forgot Password -->
+        <div class="w-full flex justify-between items-center text-xs">
+          <label class="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-slate-300">
+            <input type="checkbox" checked class="w-3.5 h-3.5 accent-sky-400 rounded bg-slate-900 border-slate-800" />
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="text-sky-400 hover:text-sky-300 hover:underline">Forgot password?</a>
+        </div>
+
+        <!-- Submit Button with Loading State -->
+        <button id="submit-btn" type="submit" class="w-full mt-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold py-2.5 rounded-xl shadow-lg shadow-sky-500/20 transition-all active:scale-[0.98] text-xs flex items-center justify-center gap-2">
+          <span id="btn-text">Sign in to Account</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5" id="btn-arrow"></i>
+        </button>
+      </form>
+
+      <!-- Success Feedback Alert -->
+      <div id="auth-success" class="w-full py-2 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center justify-center gap-2 hidden mt-2">
+        <i data-lucide="check-circle" class="w-4 h-4"></i>
+        <span>Authenticated successfully!</span>
+      </div>
+
+      <!-- Divider -->
+      <div class="w-full flex items-center my-4">
+        <div class="flex-1 border-t border-slate-800"></div>
+        <span class="px-3 text-[10px] font-mono text-slate-500 uppercase tracking-widest">Or continue with</span>
+        <div class="flex-1 border-t border-slate-800"></div>
+      </div>
+
+      <!-- Social Logins -->
+      <div class="w-full grid grid-cols-3 gap-2">
+        <button class="py-2 px-3 border border-slate-800 hover:border-slate-700 bg-slate-900/60 hover:bg-slate-800 rounded-xl text-xs font-medium text-slate-300 flex items-center justify-center gap-1.5 transition-colors">
+          <span>Google</span>
+        </button>
+        <button class="py-2 px-3 border border-slate-800 hover:border-slate-700 bg-slate-900/60 hover:bg-slate-800 rounded-xl text-xs font-medium text-slate-300 flex items-center justify-center gap-1.5 transition-colors">
+          <span>GitHub</span>
+        </button>
+        <button class="py-2 px-3 border border-slate-800 hover:border-slate-700 bg-slate-900/60 hover:bg-slate-800 rounded-xl text-xs font-medium text-slate-300 flex items-center justify-center gap-1.5 transition-colors">
+          <span>Apple</span>
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-5xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
+    <div>Original component by @preetsuthar17 • HextaUI</div>
+    <div>HTML5 Validation • Client-side Security Feedback</div>
+  </footer>
+
+  <script>
+    const form = document.getElementById("auth-form");
+    const emailInput = document.getElementById("auth-email");
+    const emailError = document.getElementById("email-error");
+    const pwInput = document.getElementById("auth-password");
+    const togglePw = document.getElementById("toggle-auth-pw");
+    const eyeIcon = document.getElementById("eye-icon");
+    const pwStrength = document.getElementById("pw-strength-bar");
+    const submitBtn = document.getElementById("submit-btn");
+    const btnText = document.getElementById("btn-text");
+    const btnArrow = document.getElementById("btn-arrow");
+    const authSuccess = document.getElementById("auth-success");
+
+    togglePw.addEventListener("click", () => {
+      if (pwInput.type === "password") {
+        pwInput.type = "text";
+        eyeIcon.setAttribute("data-lucide", "eye-off");
+      } else {
+        pwInput.type = "password";
+        eyeIcon.setAttribute("data-lucide", "eye");
+      }
+      if (window.lucide) window.lucide.createIcons();
+    });
+
+    pwInput.addEventListener("input", (e) => {
+      const val = e.target.value;
+      if (!val) {
+        pwStrength.style.width = "0%";
+      } else if (val.length < 6) {
+        pwStrength.style.width = "25%";
+        pwStrength.className = "h-full bg-rose-500 transition-all duration-300";
+      } else if (val.length < 10) {
+        pwStrength.style.width = "60%";
+        pwStrength.className = "h-full bg-amber-500 transition-all duration-300";
+      } else {
+        pwStrength.style.width = "100%";
+        pwStrength.className = "h-full bg-emerald-500 transition-all duration-300";
+      }
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      
+      // Email syntax check
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailInput.value)) {
+        emailError.classList.remove("hidden");
+        return;
+      }
+      emailError.classList.add("hidden");
+
+      // Simulated login state
+      btnText.textContent = "Verifying credentials...";
+      btnArrow.classList.add("hidden");
+      submitBtn.disabled = true;
+      submitBtn.classList.add("opacity-80");
+
+      setTimeout(() => {
+        btnText.textContent = "Sign in to Account";
+        btnArrow.classList.remove("hidden");
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("opacity-80");
+
+        authSuccess.classList.remove("hidden");
+        setTimeout(() => {
+          authSuccess.classList.add("hidden");
+        }, 3000);
+      }, 1000);
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
