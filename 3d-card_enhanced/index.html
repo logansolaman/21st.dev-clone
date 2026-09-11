@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Card (Enhanced Multi-Destination Gallery)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background-color: #070a12;
+      background-image:
+        radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+        linear-gradient(to bottom, transparent, rgba(2, 6, 23, 0.95));
+    }
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .preserve-3d {
+      transform-style: preserve-3d;
+    }
+    .card-parallax {
+      transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.3s ease;
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8 select-none">
+
+  <!-- Top Bar -->
+  <header class="w-full max-w-6xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/25">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">3d-card_enhanced</h1>
+    </div>
+    <div class="text-xs font-mono text-slate-500">Gyro Depth & Multi-Spot Switcher</div>
+  </header>
+
+  <!-- Main Stage -->
+  <main class="w-full max-w-6xl mx-auto flex-1 flex flex-col lg:flex-row items-center justify-center gap-12 my-8">
+    
+    <!-- Hero 3D Card Display Area -->
+    <div class="flex-1 flex flex-col items-center justify-center relative py-16 px-8 rounded-2xl bg-gradient-to-b from-slate-900/40 to-slate-950/80 border border-slate-800 shadow-2xl w-full min-h-[460px]">
+      <div class="absolute inset-0 bg-[radial-gradient(#38bdf80f_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none rounded-2xl"></div>
+
+      <!-- 3D Card Container -->
+      <div class="perspective-1000 relative z-10">
+        <div id="enhanced-card" class="card-parallax relative h-[28rem] w-84 rounded-2xl bg-slate-900/60 shadow-2xl border border-white/10 preserve-3d cursor-pointer">
+          
+          <!-- Elevated Layer (translateZ: 55px) -->
+          <div class="absolute inset-4 grid h-[calc(100%-2rem)] w-[calc(100%-2rem)] grid-rows-[1fr_auto] rounded-xl shadow-2xl preserve-3d pointer-events-none" style="transform: translateZ(55px);">
+            
+            <img id="card-img" alt="Destination" class="absolute inset-0 h-full w-full rounded-xl object-cover transition-opacity duration-500" src="https://cdn.21st.dev/assets/mirror/cb/cba31f67585cf839050f0f22fbea6a3ba72bed28250b0afd82cf354da4b1e652.jpg" />
+            <div class="absolute inset-0 h-full w-full rounded-xl bg-gradient-to-b from-black/30 via-transparent to-black/80"></div>
+            
+            <!-- Content -->
+            <div class="relative flex flex-col justify-between rounded-xl p-5 text-white preserve-3d">
+              
+              <div class="flex items-start justify-between">
+                <div>
+                  <span id="card-badge" class="px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-white/20 backdrop-blur-md text-sky-300 font-semibold mb-1.5 inline-block">TRENDING</span>
+                  <h2 id="card-title" class="text-2xl font-bold tracking-tight" style="transform: translateZ(50px);">Sapa Valley</h2>
+                  <p id="card-sub" class="text-sm font-light text-white/80" style="transform: translateZ(40px);">Vietnam</p>
+                </div>
+
+                <a id="card-link" href="https://en.wikipedia.org/wiki/Sa_Pa" target="_blank" rel="noopener noreferrer" class="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-inset ring-white/30 transition-colors hover:bg-white/35" style="transform: translateZ(65px);">
+                  <i data-lucide="arrow-up-right" class="w-5 h-5 text-white"></i>
+                </a>
+              </div>
+
+              <div class="flex flex-col gap-3">
+                <div class="flex items-center justify-between text-xs text-white/80 px-1 font-mono">
+                  <span>Rating: ★ 4.95</span>
+                  <span id="card-price">$640 / pax</span>
+                </div>
+                <button id="book-action-btn" class="pointer-events-auto w-full rounded-xl py-3 text-center font-semibold text-white transition-all bg-sky-500 hover:bg-sky-400 active:scale-[0.98] shadow-lg shadow-sky-500/25" style="transform: translateZ(45px);">
+                  Book This Expedition
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Live Customizer Controls Panel -->
+    <div class="w-full lg:w-96 flex flex-col gap-5 p-6 rounded-2xl bg-slate-900/40 border border-slate-800 text-sm">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h2 class="font-semibold text-slate-200">Destination Selector</h2>
+        <span class="text-xs font-mono text-slate-500">Preset Gallery</span>
+      </div>
+
+      <!-- Preset Location Chips -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-mono uppercase tracking-wider text-slate-400">Featured Locations</label>
+        <div class="flex flex-col gap-2" id="preset-list"></div>
+      </div>
+
+      <!-- Depth Parallax Multiplier -->
+      <div class="flex flex-col gap-2">
+        <div class="flex justify-between items-center text-xs">
+          <label class="font-mono uppercase tracking-wider text-slate-400">Tilt Sensitivity</label>
+          <span id="tilt-val" class="font-mono text-slate-300">18°</span>
+        </div>
+        <input id="tilt-slider" type="range" min="8" max="30" step="2" value="18" class="w-full accent-sky-400 bg-slate-800 rounded-lg cursor-pointer" />
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-6xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
+    <div>Original component by @kavikatiyar • 3D Card</div>
+    <div>Hardware-accelerated CSS 3D Transforms</div>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>

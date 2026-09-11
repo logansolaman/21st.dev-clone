@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Navigation Menu (Enhanced Dynamic Navbar Suite)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background-color: #070a12;
+      background-image:
+        radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
+        linear-gradient(to bottom, transparent, rgba(2, 6, 23, 0.95));
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between select-none">
+
+  <!-- Enhanced Top Navigation Bar -->
+  <header class="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-slate-950/75 backdrop-blur-xl px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Brand -->
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 font-bold">
+          <i data-lucide="box" class="w-4 h-4"></i>
+        </div>
+        <span class="font-bold tracking-tight text-white text-sm">21st Component Engine</span>
+      </div>
+
+      <!-- Center Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-1 relative" id="main-nav">
+        
+        <!-- Dropdown 1: Solutions -->
+        <div class="relative enh-nav-item" data-menu="solutions">
+          <button class="enh-trigger inline-flex h-9 items-center gap-1 px-3.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-900 transition-colors cursor-pointer">
+            <span>Solutions</span>
+            <i data-lucide="chevron-down" class="w-3 h-3 text-slate-500 transition-transform duration-300 enh-chevron"></i>
+          </button>
+
+          <!-- Flyout 1 -->
+          <div class="enh-flyout absolute left-0 top-full mt-2 w-[460px] rounded-2xl border border-slate-800 bg-slate-950/95 backdrop-blur-2xl p-4 shadow-2xl opacity-0 pointer-events-none transition-all duration-200">
+            <div class="grid grid-cols-2 gap-2">
+              <a href="#" class="p-3 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800/60 flex flex-col gap-1 transition-colors">
+                <div class="flex items-center gap-2 text-white font-semibold text-xs">
+                  <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+                  <span>Turbopack UI</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Ultra-fast vanilla components compiled with zero build steps.</p>
+              </a>
+              <a href="#" class="p-3 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800/60 flex flex-col gap-1 transition-colors">
+                <div class="flex items-center gap-2 text-white font-semibold text-xs">
+                  <i data-lucide="code" class="w-3.5 h-3.5 text-sky-400"></i>
+                  <span>Vanilla Porting</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Transform complex React hooks into lightweight standard JS.</p>
+              </a>
+              <a href="#" class="p-3 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800/60 flex flex-col gap-1 transition-colors">
+                <div class="flex items-center gap-2 text-white font-semibold text-xs">
+                  <i data-lucide="palette" class="w-3.5 h-3.5 text-purple-400"></i>
+                  <span>Design Systems</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Comprehensive token structures and harmonic spacing tiers.</p>
+              </a>
+              <a href="#" class="p-3 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800/60 flex flex-col gap-1 transition-colors">
+                <div class="flex items-center gap-2 text-white font-semibold text-xs">
+                  <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>Enterprise SLA</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Tested across modern browsers and responsive viewport breakpoints.</p>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dropdown 2: Library -->
+        <div class="relative enh-nav-item" data-menu="library">
+          <button class="enh-trigger inline-flex h-9 items-center gap-1 px-3.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-900 transition-colors cursor-pointer">
+            <span>Cloned Components</span>
+            <i data-lucide="chevron-down" class="w-3 h-3 text-slate-500 transition-transform duration-300 enh-chevron"></i>
+          </button>
+
+          <!-- Flyout 2 -->
+          <div class="enh-flyout absolute left-0 top-full mt-2 w-[540px] rounded-2xl border border-slate-800 bg-slate-950/95 backdrop-blur-2xl p-4 shadow-2xl opacity-0 pointer-events-none transition-all duration-200">
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <a href="../radial-orbital-timeline/index.html" class="p-3 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800/60 flex items-start gap-2.5 transition-colors">
+                <i data-lucide="orbit" class="w-4 h-4 text-sky-400 mt-0.5"></i>
+                <div>
+                  <span class="font-semibold text-white block">Radial Orbital Timeline</span>
+                  <span class="text-[11px] text-slate-400">Orbital pattern milestone timeline.</span>
+                </div>
+              </a>
+              <a href="../card-fan-carousel/index.html" class="p-3 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800/60 flex items-start gap-2.5 transition-colors">
+                <i data-lucide="layers" class="w-4 h-4 text-purple-400 mt-0.5"></i>
+                <div>
+                  <span class="font-semibold text-white block">Card Fan Carousel</span>
+                  <span class="text-[11px] text-slate-400">Elastic GSAP card fan showcase.</span>
+                </div>
+              </a>
+              <a href="../spinning-border-button/index.html" class="p-3 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800/60 flex items-start gap-2.5 transition-colors">
+                <i data-lucide="circle-dot" class="w-4 h-4 text-emerald-400 mt-0.5"></i>
+                <div>
+                  <span class="font-semibold text-white block">Spinning Border Button</span>
+                  <span class="text-[11px] text-slate-400">Conic gradient hover beam CTA.</span>
+                </div>
+              </a>
+              <a href="../liquid-metal-button/index.html" class="p-3 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800/60 flex items-start gap-2.5 transition-colors">
+                <i data-lucide="droplet" class="w-4 h-4 text-amber-400 mt-0.5"></i>
+                <div>
+                  <span class="font-semibold text-white block">Liquid Metal Button</span>
+                  <span class="text-[11px] text-slate-400">Chrome mercury shader canvas button.</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direct Links -->
+        <a href="https://github.com/logansolaman/21st.dev-clone" target="_blank" class="inline-flex h-9 items-center px-3.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-900 transition-colors">
+          GitHub Repo
+        </a>
+      </nav>
+
+      <!-- Right Action CTAs -->
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/logansolaman/21st.dev-clone" target="_blank" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 transition-colors shadow-sm shadow-sky-500/20">
+          Fork Repository
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Hero Viewport -->
+  <main class="w-full max-w-6xl mx-auto flex-1 flex flex-col items-center justify-center p-8 text-center my-16">
+    <div class="max-w-2xl flex flex-col items-center gap-4">
+      <span class="px-3 py-1 rounded-full text-xs font-mono uppercase bg-sky-500/10 text-sky-400 border border-sky-500/25 font-semibold">Zero Dependencies • Pure HTML/JS</span>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+        Next-generation UI Primitives <span class="bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">engineered for the web</span>
+      </h1>
+      <p class="text-sm text-slate-400 leading-relaxed max-w-lg">
+        Hover over the solutions or cloned components dropdowns in the navbar above to test fluid multi-column flyout animations with auto-dismissal.
+      </p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-6xl mx-auto flex items-center justify-between p-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
+    <div>Original component by @shadcn • Navigation Menu</div>
+    <div>Multi-tier Flyout • Smooth Hover Geometry</div>
+  </footer>
+
+  <script>
+    const navItems = document.querySelectorAll(".enh-nav-item");
+    let hideTimeout = null;
+
+    navItems.forEach(item => {
+      const flyout = item.querySelector(".enh-flyout");
+      const chevron = item.querySelector(".enh-chevron");
+
+      const show = () => {
+        clearTimeout(hideTimeout);
+        navItems.forEach(other => {
+          if (other !== item) {
+            other.querySelector(".enh-flyout").classList.add("opacity-0", "pointer-events-none");
+            other.querySelector(".enh-chevron").classList.remove("rotate-180");
+          }
+        });
+        flyout.classList.remove("opacity-0", "pointer-events-none");
+        chevron.classList.add("rotate-180");
+      };
+
+      const hide = () => {
+        hideTimeout = setTimeout(() => {
+          flyout.classList.add("opacity-0", "pointer-events-none");
+          chevron.classList.remove("rotate-180");
+        }, 180);
+      };
+
+      item.addEventListener("mouseenter", show);
+      item.addEventListener("mouseleave", hide);
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing Card (Enhanced Feature-Comparison Studio)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background-color: #070a12;
+      background-image:
+        radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+        linear-gradient(to bottom, transparent, rgba(2, 6, 23, 0.95));
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8 select-none">
+
+  <!-- Top bar -->
+  <header class="w-full max-w-6xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/25">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">pricing-card_enhanced</h1>
+    </div>
+    <div class="text-xs font-mono text-slate-500">Tier Breakdown & Expandable Features</div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="w-full max-w-5xl mx-auto flex-1 flex flex-col items-center justify-center my-8">
+    
+    <div class="w-full max-w-md flex flex-col gap-6 p-6 rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl shadow-2xl relative">
+      
+      <!-- Top Title & Discount Toggle -->
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-white tracking-tight">Subscription Plan</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Scale dynamically as your workloads expand.</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-[10px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">Cancel anytime</span>
+        </div>
+
+        <!-- Interval Switcher -->
+        <div class="bg-slate-950 p-1 h-11 w-full rounded-2xl border border-slate-800 flex relative">
+          <button id="btn-m" class="flex-1 h-full rounded-xl text-xs font-semibold relative transition-colors duration-300 text-white flex items-center justify-center cursor-pointer">
+            <div id="slider-m" class="absolute inset-0 bg-slate-800/80 rounded-xl shadow-md border border-slate-700/50 transition-opacity"></div>
+            <span class="relative z-10">Monthly Billing</span>
+          </button>
+          
+          <button id="btn-y" class="flex-1 h-full rounded-xl text-xs font-semibold relative transition-colors duration-300 flex items-center justify-center gap-2 text-slate-400 hover:text-white cursor-pointer">
+            <div id="slider-y" class="absolute inset-0 bg-slate-800/80 rounded-xl shadow-md border border-slate-700/50 opacity-0 transition-opacity"></div>
+            <span class="relative z-10">Annual</span>
+            <span class="relative z-10 bg-sky-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tight">SAVE 20%</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tiers Stack -->
+      <div class="flex flex-col gap-3" id="enhanced-tiers">
+        
+        <!-- Plus -->
+        <div class="tier-item cursor-pointer" data-id="plus">
+          <div class="tier-inner p-4 rounded-2xl border border-slate-800 bg-slate-950/40 hover:border-slate-700 transition-all duration-300">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="radio-dot w-5 h-5 rounded-full border-2 border-slate-700 flex items-center justify-center"></div>
+                <div>
+                  <h4 class="text-sm font-bold text-white leading-snug">Plus</h4>
+                  <p class="text-[11px] text-slate-400">1 Team Member • 5 Projects</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-lg font-bold font-mono text-white price-display">$12</div>
+                <div class="text-[10px] text-slate-500">/ user / mo</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Standard (Highlighted) -->
+        <div class="tier-item cursor-pointer" data-id="standard">
+          <div class="tier-inner p-4 rounded-2xl border-2 border-sky-500 bg-sky-500/5 transition-all duration-300 shadow-lg shadow-sky-500/10">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="radio-dot w-5 h-5 rounded-full border-2 border-sky-500 flex items-center justify-center">
+                  <div class="w-2.5 h-2.5 rounded-full bg-sky-400"></div>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <h4 class="text-sm font-bold text-white leading-snug">Standard</h4>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-mono uppercase bg-sky-500 text-black font-bold">Popular</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400">Up to 10 Members • Unlimited Runs</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-lg font-bold font-mono text-white price-display">$24</div>
+                <div class="text-[10px] text-slate-500">/ user / mo</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced -->
+        <div class="tier-item cursor-pointer" data-id="advanced">
+          <div class="tier-inner p-4 rounded-2xl border border-slate-800 bg-slate-950/40 hover:border-slate-700 transition-all duration-300">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="radio-dot w-5 h-5 rounded-full border-2 border-slate-700 flex items-center justify-center"></div>
+                <div>
+                  <h4 class="text-sm font-bold text-white leading-snug">Advanced</h4>
+                  <p class="text-[11px] text-slate-400">Dedicated Nodes • Custom SLA</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-lg font-bold font-mono text-white price-display">$48</div>
+                <div class="text-[10px] text-slate-500">/ user / mo</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Feature Checklist for Selected Tier -->
+      <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs flex flex-col gap-2">
+        <span class="font-mono text-[10px] uppercase text-slate-400 font-semibold tracking-wider" id="perks-title">Included in Standard:</span>
+        <ul class="flex flex-col gap-1.5 text-slate-300" id="perks-list">
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Up to 10 team seats</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Unlimited AI component renders</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Priority cloud GPU nodes</li>
+        </ul>
+      </div>
+
+      <!-- Action Button -->
+      <button id="checkout-btn" class="w-full py-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs tracking-wide uppercase transition-all shadow-lg shadow-sky-500/20 active:scale-[0.98] cursor-pointer">
+        Upgrade to Standard
+      </button>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-6xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
+    <div>Original component by @0xUrvish • uselayouts.com</div>
+    <div>Dynamic Feature Breakdown • Zero Bundle Bloat</div>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>

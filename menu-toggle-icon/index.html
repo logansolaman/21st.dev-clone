@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu Toggle Icon - 1:1 Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Exact SVG Morphing Dasharray and Rotate Transitions */
+    .menu-svg {
+      transition: transform 500ms ease-in-out;
+    }
+    .morph-path {
+      stroke-dasharray: 12 63;
+      stroke-dashoffset: 0;
+      transition: stroke-dasharray 500ms ease-in-out, stroke-dashoffset 500ms ease-in-out;
+    }
+
+    /* Toggled State */
+    .is-open .menu-svg {
+      transform: rotate(-45deg);
+    }
+    .is-open .morph-path {
+      stroke-dasharray: 20 300;
+      stroke-dashoffset: -32.42px;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center m-0 p-0 font-sans selection:bg-white selection:text-black">
+  <div class="w-screen min-h-screen flex justify-center items-center">
+    
+    <!-- 1:1 Clone of @efferd / Efferd UI -->
+    <button id="menu-btn" class="cursor-pointer p-4 rounded-2xl hover:bg-neutral-900/60 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white/50" aria-label="Toggle Navigation Menu">
+      <svg stroke-width="2.5" fill="none" stroke="currentColor" viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round" class="menu-svg w-20 h-20 text-white">
+        <!-- Morphing Top & Bottom Path -->
+        <path class="morph-path" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+        <!-- Static Middle Crossbar -->
+        <path d="M7 16 27 16"></path>
+      </svg>
+    </button>
+
+  </div>
+
+  <script>
+    const btn = document.getElementById("menu-btn");
+    let isOpen = false;
+
+    btn.addEventListener("click", () => {
+      isOpen = !isOpen;
+      btn.classList.toggle("is-open", isOpen);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Card - 1:1 Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .preserve-3d {
+      transform-style: preserve-3d;
+    }
+    .card-3d-motion {
+      transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center m-0 p-0 font-sans selection:bg-white selection:text-black">
+  <div class="flex min-h-[30rem] w-full items-center justify-center p-8">
+    
+    <div class="perspective-1000">
+      <!-- 1:1 Interactive Travel Card -->
+      <div id="card-3d" class="card-3d-motion relative h-[26rem] w-80 rounded-2xl bg-zinc-900/40 shadow-2xl border border-white/10 preserve-3d cursor-pointer">
+        
+        <!-- Elevated Inner Container (translateZ: 50px) -->
+        <div class="absolute inset-4 grid h-[calc(100%-2rem)] w-[calc(100%-2rem)] grid-rows-[1fr_auto] rounded-xl shadow-lg preserve-3d pointer-events-none" style="transform: translateZ(50px);">
+          
+          <!-- Background Destination Image -->
+          <img alt="Sapa Valley, Vietnam" class="absolute inset-0 h-full w-full rounded-xl object-cover" src="https://cdn.21st.dev/assets/mirror/cb/cba31f67585cf839050f0f22fbea6a3ba72bed28250b0afd82cf354da4b1e652.jpg" />
+          
+          <!-- Gradient Overlay -->
+          <div class="absolute inset-0 h-full w-full rounded-xl bg-gradient-to-b from-black/20 via-transparent to-black/70"></div>
+          
+          <!-- Card Content Body -->
+          <div class="relative flex flex-col justify-between rounded-xl p-4 text-white preserve-3d">
+            
+            <div class="flex items-start justify-between">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight" style="transform: translateZ(50px);">Sapa Valley</h2>
+                <p class="text-sm font-light text-white/80" style="transform: translateZ(40px);">Vietnam</p>
+              </div>
+
+              <!-- Top-right external link button (translateZ: 60px) -->
+              <a href="https://en.wikipedia.org/wiki/Sa_Pa" target="_blank" rel="noopener noreferrer" aria-label="Learn more about Sapa Valley" class="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm ring-1 ring-inset ring-white/30 transition-colors hover:bg-white/30" style="transform: translateZ(60px);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-white">
+                  <path d="M7 7h10v10"></path>
+                  <path d="M7 17 17 7"></path>
+                </svg>
+              </a>
+            </div>
+
+            <!-- Bottom Action Button (translateZ: 40px) -->
+            <button id="book-btn" class="pointer-events-auto w-full rounded-lg py-3 text-center font-semibold text-white transition-colors bg-white/10 backdrop-blur-md ring-1 ring-inset ring-white/20 hover:bg-white/25 active:scale-[0.98]" style="transform: translateZ(40px);">
+              Book your trip
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

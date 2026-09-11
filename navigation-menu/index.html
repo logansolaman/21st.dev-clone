@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Navigation Menu - 1:1 Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen flex items-start justify-center p-8 font-sans selection:bg-white selection:text-black">
+  
+  <!-- 1:1 Clone of @shadcn / shadcn/ui Navigation Menu -->
+  <nav class="relative z-50 flex max-w-max flex-1 items-center justify-center">
+    <div class="group flex flex-1 list-none items-center justify-center space-x-1">
+      
+      <!-- Item 1: Getting Started -->
+      <div class="relative nav-item" data-menu="getting-started">
+        <button class="nav-trigger group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-800 hover:text-white focus:bg-neutral-800 focus:outline-none">
+          <span>Getting started</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="relative top-[1px] ml-1 h-3 w-3 transition duration-300 chevron">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </button>
+
+        <!-- Flyout Panel 1 -->
+        <div class="nav-content absolute left-0 top-full mt-1.5 w-[400px] md:w-[500px] lg:w-[600px] rounded-xl border border-neutral-800 bg-neutral-950 p-4 shadow-2xl opacity-0 pointer-events-none transition-all duration-200">
+          <ul class="grid gap-3 lg:grid-cols-[.75fr_1fr]">
+            <li class="row-span-3">
+              <a href="#" class="flex h-full w-full select-none flex-col justify-end rounded-lg bg-gradient-to-b from-neutral-900 to-neutral-950 p-6 no-underline outline-none hover:shadow-md border border-neutral-800/80">
+                <div class="mb-2 mt-4 text-lg font-semibold text-white">shadcn/ui</div>
+                <p class="text-xs leading-tight text-neutral-400">Beautifully designed components built with Radix UI and Tailwind CSS.</p>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-neutral-900">
+                <div class="text-sm font-medium leading-none text-white">Introduction</div>
+                <p class="line-clamp-2 text-xs leading-snug text-neutral-400 mt-1">Re-usable components built using Radix UI and Tailwind CSS.</p>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-neutral-900">
+                <div class="text-sm font-medium leading-none text-white">Installation</div>
+                <p class="line-clamp-2 text-xs leading-snug text-neutral-400 mt-1">How to install dependencies and structure your app.</p>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-neutral-900">
+                <div class="text-sm font-medium leading-none text-white">Typography</div>
+                <p class="line-clamp-2 text-xs leading-snug text-neutral-400 mt-1">Styles for headings, paragraphs, lists...etc</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Item 2: Components -->
+      <div class="relative nav-item" data-menu="components">
+        <button class="nav-trigger group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-800 hover:text-white focus:bg-neutral-800 focus:outline-none">
+          <span>Components</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="relative top-[1px] ml-1 h-3 w-3 transition duration-300 chevron">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </button>
+
+        <!-- Flyout Panel 2 -->
+        <div class="nav-content absolute left-0 top-full mt-1.5 w-[400px] md:w-[500px] lg:w-[600px] rounded-xl border border-neutral-800 bg-neutral-950 p-4 shadow-2xl opacity-0 pointer-events-none transition-all duration-200">
+          <ul class="grid w-full gap-3 md:grid-cols-2">
+            <li>
+              <a href="#" class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-neutral-900">
+                <div class="text-sm font-medium leading-none text-white">Alert Dialog</div>
+                <p class="line-clamp-2 text-xs leading-snug text-neutral-400 mt-1">A modal dialog that interrupts the user with important content.</p>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-neutral-900">
+                <div class="text-sm font-medium leading-none text-white">Hover Card</div>
+                <p class="line-clamp-2 text-xs leading-snug text-neutral-400 mt-1">For sighted users to preview content available behind a link.</p>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-neutral-900">
+                <div class="text-sm font-medium leading-none text-white">Progress</div>
+                <p class="line-clamp-2 text-xs leading-snug text-neutral-400 mt-1">Displays an indicator showing the completion progress of a task.</p>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-neutral-900">
+                <div class="text-sm font-medium leading-none text-white">Scroll-area</div>
+                <p class="line-clamp-2 text-xs leading-snug text-neutral-400 mt-1">Visually or semantically separates content.</p>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-neutral-900">
+                <div class="text-sm font-medium leading-none text-white">Tabs</div>
+                <p class="line-clamp-2 text-xs leading-snug text-neutral-400 mt-1">A set of layered sections of content displayed one at a time.</p>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-neutral-900">
+                <div class="text-sm font-medium leading-none text-white">Tooltip</div>
+                <p class="line-clamp-2 text-xs leading-snug text-neutral-400 mt-1">A popup that displays information related to an element on hover.</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Item 3: Direct Link -->
+      <div>
+        <a href="#" class="inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-800 hover:text-white">
+          Documentation
+        </a>
+      </div>
+
+    </div>
+  </nav>
+
+  <script>
+    const items = document.querySelectorAll(".nav-item");
+    let activeItem = null;
+    let hideTimer = null;
+
+    items.forEach(item => {
+      const trigger = item.querySelector(".nav-trigger");
+      const content = item.querySelector(".nav-content");
+      const chevron = item.querySelector(".chevron");
+
+      const show = () => {
+        clearTimeout(hideTimer);
+        items.forEach(other => {
+          if (other !== item) {
+            other.querySelector(".nav-content").classList.add("opacity-0", "pointer-events-none");
+            other.querySelector(".chevron").classList.remove("rotate-180");
+          }
+        });
+        content.classList.remove("opacity-0", "pointer-events-none");
+        chevron.classList.add("rotate-180");
+      };
+
+      const hide = () => {
+        hideTimer = setTimeout(() => {
+          content.classList.add("opacity-0", "pointer-events-none");
+          chevron.classList.remove("rotate-180");
+        }, 150);
+      };
+
+      item.addEventListener("mouseenter", show);
+      item.addEventListener("mouseleave", hide);
+      trigger.addEventListener("click", () => {
+        if (content.classList.contains("opacity-0")) show();
+        else hide();
+      });
+    });
+  </script>
+</body>
+</html>
