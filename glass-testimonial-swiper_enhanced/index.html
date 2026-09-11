@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glass Testimonial Swiper (Enhanced Touch & Auto-Advance)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background-color: #070a12;
+      background-image:
+        radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+        linear-gradient(to bottom, transparent, rgba(2, 6, 23, 0.95));
+    }
+    .enh-card {
+      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease, box-shadow 0.3s ease;
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8 select-none">
+
+  <header class="w-full max-w-6xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/25">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">glass-testimonial-swiper_enhanced</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <button id="btn-auto" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+        <i data-lucide="play" class="w-3.5 h-3.5 text-sky-400" id="play-icon"></i>
+        <span id="play-text">Auto Rotate</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-5xl mx-auto flex-1 flex flex-col items-center justify-center my-8">
+    
+    <div class="relative w-full max-w-xl flex flex-col items-center">
+      
+      <!-- Stage -->
+      <div id="stack-viewport" class="relative w-full h-[340px] flex items-center justify-center">
+        <!-- Injected Cards -->
+      </div>
+
+      <!-- Controls -->
+      <div class="flex items-center justify-between w-full max-w-md mt-6 px-4">
+        <button id="prev-action" class="w-10 h-10 rounded-full border border-slate-800 bg-slate-900/80 hover:bg-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </button>
+
+        <div id="enhanced-dots" class="flex items-center gap-2"></div>
+
+        <button id="next-action" class="w-10 h-10 rounded-full border border-slate-800 bg-slate-900/80 hover:bg-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer">
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="w-full max-w-6xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
+    <div>Original design by @jahed • Glass Testimonial Swiper</div>
+    <div>Multi-layer 3D CSS Stack • Swiping Gesture Engine</div>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketing Dashboard (Enhanced Time & Task Analytics)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background-color: #070a12;
+      background-image:
+        radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+        linear-gradient(to bottom, transparent, rgba(2, 6, 23, 0.95));
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8 select-none">
+
+  <!-- Top bar -->
+  <header class="w-full max-w-6xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/25">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">dashboard-1_enhanced</h1>
+    </div>
+    <div class="text-xs font-mono text-slate-500">Live Metric Simulation Engine</div>
+  </header>
+
+  <!-- Showcase Stage -->
+  <main class="w-full max-w-5xl mx-auto flex-1 flex flex-col items-center justify-center my-8">
+    
+    <div class="w-full max-w-md rounded-3xl bg-slate-900/50 backdrop-blur-2xl border border-slate-800 p-7 shadow-2xl flex flex-col gap-6 relative">
+      
+      <!-- Top Header -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 shadow-inner">
+            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white leading-tight">Engineering Velocity</h3>
+            <p class="text-[11px] text-slate-400 font-mono">Real-time Sprint Telemetry</p>
+          </div>
+        </div>
+
+        <!-- Interval Dropdown -->
+        <select id="time-filter" class="text-xs bg-slate-950 text-slate-300 border border-slate-800 rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-sky-500 font-mono cursor-pointer">
+          <option value="today">Today</option>
+          <option value="week" selected>This Week</option>
+          <option value="month">This Month</option>
+        </select>
+      </div>
+
+      <!-- Main Headline Metric -->
+      <div class="flex items-end justify-between border-b border-slate-800/80 pb-4">
+        <div>
+          <span class="text-xs font-mono text-slate-400 uppercase tracking-wider block mb-0.5">Total Hours Logged</span>
+          <div class="flex items-baseline gap-2">
+            <span id="total-hours" class="text-4xl font-black tracking-tight text-white font-mono">42.5</span>
+            <span class="text-xs text-emerald-400 font-semibold flex items-center gap-0.5 font-mono">
+              <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +14.2%
+            </span>
+          </div>
+        </div>
+        <span class="text-[11px] text-slate-500 font-mono">Target: 40.0h</span>
+      </div>
+
+      <!-- Segmented Multi-color Progress Stack -->
+      <div class="flex flex-col gap-2">
+        <div class="w-full h-3.5 rounded-full bg-slate-950 overflow-hidden flex gap-1 p-0.5 border border-slate-800">
+          <div id="bar-prod" class="h-full rounded-full bg-emerald-400 transition-all duration-500 shadow-[0_0_8px_rgba(52,211,153,0.5)]" style="width: 52%;" title="Deep Work"></div>
+          <div id="bar-review" class="h-full rounded-full bg-sky-400 transition-all duration-500" style="width: 24%;" title="Code Review"></div>
+          <div id="bar-sync" class="h-full rounded-full bg-amber-400 transition-all duration-500" style="width: 14%;" title="Team Sync"></div>
+          <div id="bar-idle" class="h-full rounded-full bg-slate-700 transition-all duration-500" style="width: 10%;" title="Idle/Break"></div>
+        </div>
+        <div class="flex justify-between text-[10px] font-mono text-slate-500 px-1">
+          <span>0h</span>
+          <span>50%</span>
+          <span>100% Allocation</span>
+        </div>
+      </div>
+
+      <!-- Detailed Breakdown Grid -->
+      <div class="grid grid-cols-2 gap-3.5 text-xs">
+        <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span class="text-slate-300">Deep Work</span>
+          </div>
+          <span id="pct-prod" class="font-mono font-bold text-white">52%</span>
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+            <span class="text-slate-300">Code Review</span>
+          </div>
+          <span id="pct-review" class="font-mono font-bold text-white">24%</span>
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span class="text-slate-300">Team Sync</span>
+          </div>
+          <span id="pct-sync" class="font-mono font-bold text-white">14%</span>
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
+            <span class="text-slate-300">Idle / Rest</span>
+          </div>
+          <span id="pct-idle" class="font-mono font-bold text-white">10%</span>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button id="export-report-btn" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white border border-slate-700 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-lg">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        <span>Export Timesheet CSV</span>
+      </button>
+
+    </div>
+
+  </main>
+
+  <footer class="w-full max-w-6xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
+    <div>Original component by @ravikatiyar162 • Dashboard-1</div>
+    <div>Dynamic Telemetry Engine • CSS Progress Segments</div>
+  </footer>
+
+  <script>
+    const DATA = {
+      today: { hours: 8.2, prod: 60, review: 20, sync: 10, idle: 10 },
+      week: { hours: 42.5, prod: 52, review: 24, sync: 14, idle: 10 },
+      month: { hours: 168.0, prod: 55, review: 22, sync: 13, idle: 10 }
+    };
+
+    const filter = document.getElementById("time-filter");
+    const totalHours = document.getElementById("total-hours");
+    const barProd = document.getElementById("bar-prod");
+    const barReview = document.getElementById("bar-review");
+    const barSync = document.getElementById("bar-sync");
+    const barIdle = document.getElementById("bar-idle");
+
+    const pctProd = document.getElementById("pct-prod");
+    const pctReview = document.getElementById("pct-review");
+    const pctSync = document.getElementById("pct-sync");
+    const pctIdle = document.getElementById("pct-idle");
+
+    function updateMetrics(key) {
+      const d = DATA[key];
+      totalHours.textContent = d.hours.toFixed(1);
+
+      barProd.style.width = `${d.prod}%`;
+      barReview.style.width = `${d.review}%`;
+      barSync.style.width = `${d.sync}%`;
+      barIdle.style.width = `${d.idle}%`;
+
+      pctProd.textContent = `${d.prod}%`;
+      pctReview.textContent = `${d.review}%`;
+      pctSync.textContent = `${d.sync}%`;
+      pctIdle.textContent = `${d.idle}%`;
+    }
+
+    filter.addEventListener("change", (e) => updateMetrics(e.target.value));
+
+    document.getElementById("export-report-btn").addEventListener("click", () => {
+      alert("Timesheet report ready for download.");
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

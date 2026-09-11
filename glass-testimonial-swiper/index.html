@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glass Testimonial Swiper - 1:1 Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .testimonial-card {
+      transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center m-0 p-4 font-sans select-none">
+  <div class="flex min-h-[32rem] w-full items-center justify-center p-4">
+    
+    <!-- Outer Swiper Container -->
+    <div class="relative w-full max-w-lg flex flex-col items-center">
+      
+      <!-- Cards Viewport -->
+      <div id="stack-container" class="relative w-full h-80 flex items-center justify-center">
+        <!-- Injected stacked cards -->
+      </div>
+
+      <!-- Controls & Pagination -->
+      <div class="flex items-center gap-6 mt-6 z-20">
+        <!-- Prev Button -->
+        <button id="btn-prev" class="w-10 h-10 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white transition-colors cursor-pointer" aria-label="Previous review">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+
+        <!-- Pagination Dots -->
+        <div id="pagination-dots" class="flex items-center gap-2"></div>
+
+        <!-- Next Button -->
+        <button id="btn-next" class="w-10 h-10 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white transition-colors cursor-pointer" aria-label="Next review">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

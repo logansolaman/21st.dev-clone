@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Card (Enhanced E-Commerce Swatch Studio)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background-color: #070a12;
+      background-image:
+        radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+        linear-gradient(to bottom, transparent, rgba(2, 6, 23, 0.95));
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8 select-none">
+
+  <!-- Top bar -->
+  <header class="w-full max-w-6xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/25">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">product-card_enhanced</h1>
+    </div>
+    <div class="text-xs font-mono text-slate-500">Live Swatches & Dynamic Cart Sync</div>
+  </header>
+
+  <!-- Main Stage -->
+  <main class="w-full max-w-5xl mx-auto flex-1 flex flex-col items-center justify-center my-8">
+    
+    <div class="relative w-full max-w-sm rounded-3xl bg-slate-900/60 backdrop-blur-2xl border border-slate-800 p-6 shadow-2xl flex flex-col justify-between overflow-hidden group">
+      
+      <!-- Top Row: Stock Badge & Wishlist Button -->
+      <div class="flex items-center justify-between z-10">
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 tracking-wider">IN STOCK • 2M LENGTH</span>
+        <button id="wishlist-btn" class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-rose-400 transition-colors">
+          <i data-lucide="heart" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Product Image Stage with Glow Halo -->
+      <div class="relative w-full h-60 flex items-center justify-center my-4 overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.12)_0,transparent_70%)] pointer-events-none"></div>
+        <img id="product-image" alt="Thunderbolt Cable" src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-b3aKXmNboBC5A2lhRgyEeUYJMuII0v.png" class="max-h-52 object-contain transition-transform duration-500 group-hover:scale-108 drop-shadow-[0_15px_25px_rgba(0,0,0,0.7)] z-10" />
+      </div>
+
+      <!-- Specs & Color Swatches -->
+      <div class="flex flex-col gap-4 z-10">
+        <div>
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white leading-tight" id="product-title">Thunderbolt 4 Pro Cable</h3>
+            <span class="text-xs text-amber-400 flex items-center gap-1 font-mono">
+              ★ 4.9 <span class="text-slate-500 text-[10px]">(342)</span>
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1" id="product-desc">Braided silicone wire with 240W Power Delivery & 40Gbps data throughput.</p>
+        </div>
+
+        <!-- Color Swatch Picker -->
+        <div class="flex items-center justify-between py-2 border-y border-slate-800/80">
+          <span class="text-xs text-slate-400">Color Variant: <b class="text-white ml-1 font-mono text-[11px]" id="selected-color-name">Glacier White</b></span>
+          <div class="flex items-center gap-2">
+            <button data-color="white" data-name="Glacier White" class="color-swatch active w-5 h-5 rounded-full bg-white ring-2 ring-sky-500 ring-offset-2 ring-offset-slate-900 transition-all"></button>
+            <button data-color="black" data-name="Space Black" class="color-swatch w-5 h-5 rounded-full bg-zinc-800 ring-1 ring-slate-700 hover:ring-slate-500 ring-offset-2 ring-offset-slate-900 transition-all"></button>
+            <button data-color="blue" data-name="Pacific Navy" class="color-swatch w-5 h-5 rounded-full bg-blue-600 ring-1 ring-slate-700 hover:ring-slate-500 ring-offset-2 ring-offset-slate-900 transition-all"></button>
+          </div>
+        </div>
+
+        <!-- Price & Cart CTA -->
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <span class="text-[10px] text-slate-500 block uppercase font-mono">Special Price</span>
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-xl font-bold font-mono text-white">$29.00</span>
+              <span class="text-xs font-mono text-slate-500 line-through">$39.00</span>
+            </div>
+          </div>
+          <button id="add-btn" class="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold transition-all active:scale-95 shadow-lg shadow-sky-500/20 flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+            <span id="add-text">Add to Cart</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-6xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
+    <div>Original component by @ravikatiyar162 • Product Card</div>
+    <div>Live Variant Swatching • Dynamic Bag Interaction</div>
+  </footer>
+
+  <script>
+    const swatches = document.querySelectorAll(".color-swatch");
+    const colorName = document.getElementById("selected-color-name");
+    const addBtn = document.getElementById("add-btn");
+    const addText = document.getElementById("add-text");
+    const wishlistBtn = document.getElementById("wishlist-btn");
+    let isWishlisted = false;
+
+    swatches.forEach(swatch => {
+      swatch.addEventListener("click", () => {
+        swatches.forEach(s => s.className = "color-swatch w-5 h-5 rounded-full ring-1 ring-slate-700 hover:ring-slate-500 ring-offset-2 ring-offset-slate-900 transition-all " + (s.dataset.color === 'white' ? 'bg-white' : s.dataset.color === 'black' ? 'bg-zinc-800' : 'bg-blue-600'));
+        swatch.className = "color-swatch active w-5 h-5 rounded-full ring-2 ring-sky-500 ring-offset-2 ring-offset-slate-900 transition-all " + (swatch.dataset.color === 'white' ? 'bg-white' : swatch.dataset.color === 'black' ? 'bg-zinc-800' : 'bg-blue-600');
+        colorName.textContent = swatch.dataset.name;
+      });
+    });
+
+    addBtn.addEventListener("click", () => {
+      addText.textContent = "Added to Bag!";
+      addBtn.className = "px-5 py-2.5 rounded-xl bg-emerald-400 text-slate-950 text-xs font-bold transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 cursor-pointer";
+      setTimeout(() => {
+        addText.textContent = "Add to Cart";
+        addBtn.className = "px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold transition-all active:scale-95 shadow-lg shadow-sky-500/20 flex items-center gap-1.5 cursor-pointer";
+      }, 2000);
+    });
+
+    wishlistBtn.addEventListener("click", () => {
+      isWishlisted = !isWishlisted;
+      const icon = wishlistBtn.querySelector("i");
+      if (isWishlisted) {
+        wishlistBtn.className = "w-8 h-8 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center transition-colors";
+        icon.setAttribute("fill", "currentColor");
+      } else {
+        wishlistBtn.className = "w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-rose-400 transition-colors";
+        icon.removeAttribute("fill");
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

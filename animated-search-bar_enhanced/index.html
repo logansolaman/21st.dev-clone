@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animated Search Bar (Enhanced Command Palette)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background-color: #070a12;
+      background-image:
+        radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+        linear-gradient(to bottom, transparent, rgba(2, 6, 23, 0.95));
+    }
+    .capsule-morph {
+      transition: width 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.25s ease,
+                  box-shadow 0.25s ease;
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8 select-none">
+
+  <!-- Top bar -->
+  <header class="w-full max-w-5xl mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/25">21st.dev</span>
+      <span class="text-slate-600">/</span>
+      <h1 class="text-sm font-mono text-slate-300">animated-search-bar_enhanced</h1>
+    </div>
+    <div class="flex items-center gap-1.5 text-xs font-mono text-slate-500">
+      <span class="bg-slate-800 px-1.5 py-0.5 rounded text-slate-300">⌘K</span>
+      <span>Shortcut</span>
+    </div>
+  </header>
+
+  <!-- Main Stage -->
+  <main class="w-full max-w-4xl mx-auto flex-1 flex flex-col items-center justify-center my-12">
+    
+    <div class="relative flex flex-col items-center w-full max-w-md">
+      
+      <!-- Morphing Command Bar Capsule -->
+      <div id="enh-search-box" class="capsule-morph relative flex items-center bg-slate-900/80 backdrop-blur-xl border border-slate-800 hover:border-slate-700 rounded-full h-12 w-44 px-4 cursor-pointer shadow-2xl hover:shadow-sky-500/10 z-30">
+        
+        <i data-lucide="search" class="w-4 h-4 text-sky-400 shrink-0"></i>
+
+        <div id="enh-collapsed-label" class="ml-2.5 flex items-center justify-between w-full text-xs font-medium text-slate-300">
+          <span>Search 21st UI...</span>
+          <span class="text-[10px] font-mono text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded">⌘K</span>
+        </div>
+
+        <input id="enh-search-input" type="text" placeholder="Search components, shaders, buttons..." class="hidden ml-2.5 w-full bg-transparent border-0 outline-none text-xs text-white placeholder:text-slate-500 font-sans" />
+
+        <button id="enh-close-btn" class="hidden text-slate-500 hover:text-white ml-2 p-1 rounded-full hover:bg-slate-800 transition-colors" aria-label="Close search">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <!-- Live Search Results Dropdown -->
+      <div id="enh-results-panel" class="absolute top-16 w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-2xl p-3 shadow-2xl flex flex-col gap-1.5 hidden opacity-0 transition-all duration-200 z-20">
+        <div class="px-2 py-1 flex items-center justify-between text-[10px] font-mono uppercase text-slate-500 border-b border-slate-800/80">
+          <span>Cloned Components</span>
+          <span id="match-count">8 Available</span>
+        </div>
+
+        <div class="flex flex-col gap-1 mt-1 max-h-60 overflow-y-auto" id="results-list">
+          <!-- Injected dynamically based on filter -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="w-full max-w-5xl mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
+    <div>Original design by @aghasisahakyan1 • Animated Search Bar</div>
+    <div>Live Instant Filtering • Hotkey Navigation</div>
+  </footer>
+
+  <script>
+    const CATALOG = [
+      { name: "Radial Orbital Timeline", cat: "Timeline", icon: "orbit" },
+      { name: "Card Fan Carousel", cat: "Carousel", icon: "layers" },
+      { name: "Spinning Border Button", cat: "Button", icon: "circle-dot" },
+      { name: "Liquid Metal Button", cat: "Shader", icon: "droplet" },
+      { name: "Morphing Popover", cat: "Popover", icon: "sliders" },
+      { name: "Motion Button", cat: "Button", icon: "crosshair" },
+      { name: "Coupon Reveal Button", cat: "Voucher", icon: "ticket" },
+      { name: "3D Travel Card", cat: "Card", icon: "image" }
+    ];
+
+    const box = document.getElementById("enh-search-box");
+    const label = document.getElementById("enh-collapsed-label");
+    const input = document.getElementById("enh-search-input");
+    const closeBtn = document.getElementById("enh-close-btn");
+    const panel = document.getElementById("enh-results-panel");
+    const list = document.getElementById("results-list");
+    const matchCount = document.getElementById("match-count");
+
+    let isExpanded = false;
+
+    function renderList(filter = "") {
+      const q = filter.toLowerCase().trim();
+      const filtered = CATALOG.filter(c => c.name.toLowerCase().includes(q) || c.cat.toLowerCase().includes(q));
+      
+      matchCount.textContent = `${filtered.length} Matches`;
+      list.innerHTML = "";
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 font-mono">No matching components found.</div>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "p-2.5 rounded-xl hover:bg-slate-800/70 flex items-center justify-between text-xs cursor-pointer transition-colors";
+        row.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="${item.icon}" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span class="text-slate-200 font-medium">${item.name}</span>
+          </div>
+          <span class="text-[10px] font-mono text-slate-500 bg-slate-950 px-2 py-0.5 rounded-md border border-slate-800">${item.cat}</span>
+        `;
+        row.onclick = () => {
+          alert(`Opening component: ${item.name}`);
+        };
+        list.appendChild(row);
+      });
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function expand() {
+      if (isExpanded) return;
+      isExpanded = true;
+
+      box.style.width = "100%";
+      box.classList.remove("cursor-pointer");
+      label.classList.add("hidden");
+
+      input.classList.remove("hidden");
+      closeBtn.classList.remove("hidden");
+      input.focus();
+
+      renderList();
+      panel.classList.remove("hidden");
+      setTimeout(() => {
+        panel.classList.remove("opacity-0");
+      }, 80);
+    }
+
+    function collapse() {
+      if (!isExpanded) return;
+      isExpanded = false;
+
+      panel.classList.add("opacity-0");
+      setTimeout(() => {
+        panel.classList.add("hidden");
+      }, 150);
+
+      input.classList.add("hidden");
+      closeBtn.classList.add("hidden");
+      label.classList.remove("hidden");
+
+      box.style.width = "11rem"; // w-44
+      box.classList.add("cursor-pointer");
+      input.value = "";
+    }
+
+    box.addEventListener("click", () => {
+      if (!isExpanded) expand();
+    });
+
+    closeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      collapse();
+    });
+
+    input.addEventListener("input", (e) => {
+      renderList(e.target.value);
+    });
+
+    document.addEventListener("click", (e) => {
+      if (isExpanded && !box.contains(e.target) && !panel.contains(e.target)) {
+        collapse();
+      }
+    });
+
+    // ⌘K or Ctrl+K shortcut
+    window.addEventListener("keydown", (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        if (isExpanded) collapse();
+        else expand();
+      }
+      if (e.key === "Escape" && isExpanded) {
+        collapse();
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

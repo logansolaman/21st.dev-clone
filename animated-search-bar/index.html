@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animated Search Bar - 1:1 Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Expanding search bar and result listbox transitions */
+    .search-box {
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.25s ease;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center m-0 p-4 font-sans select-none">
+  <div class="w-screen min-h-screen flex justify-center items-center">
+    
+    <div class="relative flex flex-col items-center">
+      
+      <!-- 1:1 Morphing Search Capsule -->
+      <div id="search-capsule" class="search-box relative flex items-center bg-zinc-900 border border-zinc-800 rounded-full h-11 w-28 px-3.5 cursor-pointer shadow-xl">
+        
+        <!-- Search Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400 shrink-0">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+
+        <!-- Collapsed Label -->
+        <span id="collapsed-label" class="ml-2 text-xs font-medium text-zinc-300 transition-opacity">Search</span>
+
+        <!-- Expanded Real Input -->
+        <input id="search-input" type="text" placeholder="Type to search..." class="hidden ml-2 w-full bg-transparent border-0 outline-none text-xs text-white placeholder:text-zinc-500" />
+
+        <!-- Clear / Close Button -->
+        <button id="close-search" class="hidden text-zinc-500 hover:text-white ml-1 p-0.5" aria-label="Close search">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- Popdown Search Results List -->
+      <div id="results-dropdown" class="absolute top-14 w-72 bg-zinc-900/95 backdrop-blur-xl border border-zinc-800 rounded-2xl p-2 shadow-2xl flex flex-col gap-1 hidden opacity-0 transition-opacity duration-200 z-50">
+        <div class="px-3 py-1.5 text-[10px] font-mono uppercase text-zinc-500">Suggested Results</div>
+        <div class="result-item p-2 rounded-xl hover:bg-zinc-800 flex items-center justify-between text-xs cursor-pointer">
+          <span class="text-zinc-200">Radial Orbital Timeline</span>
+          <span class="text-[10px] text-zinc-500 font-mono">Component</span>
+        </div>
+        <div class="result-item p-2 rounded-xl hover:bg-zinc-800 flex items-center justify-between text-xs cursor-pointer">
+          <span class="text-zinc-200">Card Fan Carousel</span>
+          <span class="text-[10px] text-zinc-500 font-mono">Component</span>
+        </div>
+        <div class="result-item p-2 rounded-xl hover:bg-zinc-800 flex items-center justify-between text-xs cursor-pointer">
+          <span class="text-zinc-200">Spinning Border Button</span>
+          <span class="text-[10px] text-zinc-500 font-mono">Button</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
