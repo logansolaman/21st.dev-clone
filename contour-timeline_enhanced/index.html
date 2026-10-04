@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contour Timeline - Enhanced</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /*
+      Contour Timeline — ENHANCED variant.
+
+      Same design language as the 1:1 clone (cream/plum palette, Geist,
+      contour curve, measured geometry) with these deliberate improvements:
+
+      1. Real crossfade — the image stack crossfades between milestones
+         instead of swapping instantly.
+      2. Card follows the curve properly — clamp keeps it inside the root
+         while the stem stays anchored to the apex dot.
+      3. Progress indicator — prev/next arrows + "n of N" counter, so the
+         component is usable without a pointer (the original relies on
+         hover/click alone).
+      4. Compact breakpoint at 720px — stations become a horizontally
+         scrollable row; the original has no usable mobile layout.
+      5. Touch-friendly hit areas — 44px minimum target height.
+      6. Reduced-motion honoured in JS (not just CSS) — animations are
+         skipped entirely when the user prefers reduced motion.
+      7. Internal links only — demo data lives in one config object and
+         no link navigates away from the page.
+    */
+
+    :root {
+      --page: #f7f4ee;
+      --card: #fffcf7;
+      --line: #d7cac3;
+      --text: #3d3034;
+      --muted: #867a78;
+      --accent: #713b4a;
+      --badge: #493a37;
+      --font: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--page);
+      font-family: var(--font);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .ct-stage {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .ct-root {
+      position: relative;
+      width: 100%;
+      max-width: 1120px;
+      height: 643px;
+      padding: 22px 28px 12px;
+      overflow: clip;
+    }
+
+    /* ---- selected card ---- */
+    .ct-card {
+      position: absolute;
+      top: 30px;
+      width: 330px;
+      min-height: 403px;
+      display: flex;
+      flex-direction: column;
+      padding-top: 1px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--card);
+      color: var(--text);
+      box-shadow:
+        0 25px 50px -23px rgba(55, 32, 35, 0.25),
+        0 5px 12px -6px rgba(55, 32, 35, 0.1);
+      user-select: text;
+      z-index: 3;
+      transition: left 420ms cubic-bezier(0.16, 1, 0.3, 1);
+      text-decoration: none;
+      overflow: hidden;
+    }
+
+    .ct-card__media {
+      position: relative;
+      height: 166px;
+      margin: 6px 6px 0;
+      border-radius: 13px;
+      background: var(--line);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* crossfade stack: both layers always present, opacity swapped */
+    .ct-card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 420ms ease;
+    }
+    .ct-card__img.is-front { opacity: 1; z-index: 1; }
+
+    .ct-card__badge {
+      position: absolute;
+      left: 13px;
+      top: 13px;
+      z-index: 2;
+      border-radius: 30px;
+      padding: 6px 10px;
+      background: rgba(255, 252, 247, 0.92);
+      color: var(--badge);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      line-height: 1;
+    }
+
+    .ct-card__body { padding: 22px 22px 8px; flex: 1 0 auto; }
+
+    .ct-card__eyebrow {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      line-height: 1.4;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0;
+    }
+
+    .ct-card__title {
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 25.52px;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin: 11px 0 0;
+    }
+
+    .ct-card__text {
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 20.15px;
+      letter-spacing: -0.195px;
+      color: var(--text);
+      margin: 10px 0 0;
+    }
+
+    .ct-card__cta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-top: 17px;
+      margin-top: 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: opacity 200ms ease;
+    }
+    .ct-card__cta:hover { opacity: 0.72; }
+    .ct-card__cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .ct-card__cta svg { flex-shrink: 0; }
+
+    /* ---- rail / curve ---- */
+    .ct-rail {
+      position: absolute;
+      left: 28px;
+      z-index: 1;
+      top: 433px;
+      width: 1064px;
+      height: 122px;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .ct-rail__ghost { stroke: var(--line); stroke-width: 0.825; }
+    .ct-rail__ghost--a { opacity: 0.7; }
+    .ct-rail__ghost--b { opacity: 0.62; }
+    .ct-rail__main { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+    .ct-rail__stem { stroke: var(--accent); stroke-width: 1.5; }
+
+    /* ---- stations ---- */
+    .ct-stations {
+      position: absolute;
+      left: 28px;
+      top: 501px;
+      width: 1064px;
+      height: 122px;
+      z-index: 2;
+    }
+
+    .ct-station {
+      position: absolute;
+      top: 0;
+      width: 198.8px;
+      min-height: 44px;
+      padding: 22px 4px 15px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      user-select: none;
+      appearance: none;
+      font-family: var(--font);
+      display: block;
+      transition: color 260ms ease;
+    }
+
+    .ct-station__dot {
+      position: absolute;
+      top: 19px;
+      left: calc(50% - 3px);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .ct-station__year {
+      display: inline-block;
+      padding: 7px 9px;
+      margin-top: 9px;
+      font-weight: 500;
+      font-size: 34px;
+      letter-spacing: -0.05em;
+      line-height: 1.2;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      transition: color 260ms ease;
+    }
+
+    .ct-station__label {
+      display: block;
+      margin-top: 7px;
+      padding: 0 5px;
+      font-weight: 500;
+      font-size: 10px;
+      letter-spacing: 0.45px;
+      line-height: 1.4;
+      color: inherit;
+      transition: color 260ms ease;
+    }
+
+    .ct-station.is-active { color: var(--accent); }
+    .ct-station.is-active .ct-station__year { color: var(--accent); }
+    .ct-station.is-active .ct-station__dot { transform: scale(1.5); }
+
+    .ct-station:hover .ct-station__year,
+    .ct-station:focus-visible .ct-station__year { color: var(--accent); }
+    .ct-station:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+    /* ---- enhanced: navigation bar ---- */
+    .ct-nav {
+      position: absolute;
+      right: 28px;
+      top: 8px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ct-nav__btn {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--card);
+      color: var(--accent);
+      cursor: pointer;
+      transition: background 180ms ease, color 180ms ease, opacity 180ms ease;
+    }
+    .ct-nav__btn:hover:not(:disabled) { background: var(--accent); color: var(--card); }
+    .ct-nav__btn:disabled { opacity: 0.4; cursor: default; }
+    .ct-nav__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .ct-nav__count {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      min-width: 44px;
+      text-align: center;
+    }
+
+    /* ---- enhanced: progress rail under the nav ---- */
+    .ct-progress {
+      position: absolute;
+      right: 28px;
+      top: 46px;
+      z-index: 4;
+      display: flex;
+      gap: 4px;
+    }
+    .ct-progress__seg {
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--line);
+      transition: background 260ms ease, transform 260ms ease;
+      transform-origin: center;
+    }
+    .ct-progress__seg.is-done { background: rgba(113, 59, 74, 0.45); }
+    .ct-progress__seg.is-active { background: var(--accent); transform: scaleY(1.6); }
+
+    .ct-sr {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ---- compact breakpoint (720px) ---- */
+    @media (max-width: 720px) {
+      .ct-stage { padding: 16px 8px; }
+      .ct-root {
+        height: auto;
+        padding: 16px 12px 20px;
+        overflow: visible;
+      }
+      .ct-nav { position: relative; right: auto; top: auto; justify-content: center; margin-bottom: 10px; }
+      .ct-progress { position: relative; right: auto; top: auto; justify-content: center; margin-bottom: 12px; }
+      .ct-card {
+        position: relative;
+        top: auto;
+        left: auto !important;
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto 16px;
+        transition: none;
+        min-height: 0;
+      }
+      .ct-rail {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        height: auto;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 4px;
+      }
+      .ct-rail svg { min-width: 700px; }
+      .ct-stations {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 100%;
+        height: auto;
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding: 4px 0;
+        scroll-snap-type: x proximity;
+      }
+      .ct-stations .ct-station {
+        position: relative;
+        left: auto !important;
+        flex: 0 0 auto;
+        width: 132px !important;
+        scroll-snap-align: center;
+        padding: 18px 4px 14px;
+      }
+      .ct-stations .ct-station__year { font-size: 26px; }
+      .ct-card__media { height: 150px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ct-card, .ct-station, .ct-station__year, .ct-station__dot,
+      .ct-card__img, .ct-progress__seg, .ct-nav__btn { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ct-stage">
+    <!-- Enhanced variant of Contour Timeline (Framer Marketplace, by Matt) -->
+    <div class="ct-root" id="ct-root" role="region" aria-label="Studio milestones">
+
+      <!-- enhanced: prev/next + counter -->
+      <div class="ct-nav" role="group" aria-label="Timeline navigation">
+        <button class="ct-nav__btn" id="ct-prev" type="button" aria-label="Previous milestone">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M16 10H4m5-5-5 5 5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="ct-nav__count" id="ct-count" aria-hidden="true">1 of 5</span>
+        <button class="ct-nav__btn" id="ct-next" type="button" aria-label="Next milestone">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="ct-progress" id="ct-progress" aria-hidden="true"></div>
+
+      <!-- selected card -->
+      <a class="ct-card" id="ct-card" href="#" aria-label="" tabindex="-1">
+        <div class="ct-card__media">
+          <span class="ct-card__badge" id="ct-badge">2022</span>
+          <img class="ct-card__img" id="ct-img-a" src="" alt="" />
+          <img class="ct-card__img" id="ct-img-b" src="" alt="" />
+        </div>
+        <div class="ct-card__body">
+          <p class="ct-card__eyebrow" id="ct-eyebrow">The turning point</p>
+          <h3 class="ct-card__title" id="ct-title"></h3>
+          <p class="ct-card__text" id="ct-text"></p>
+          <span class="ct-card__cta">
+            Explore chapter
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="pointer-events:none">
+              <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5"></path>
+            </svg>
+          </span>
+        </div>
+      </a>
+
+      <!-- rail -->
+      <div class="ct-rail" aria-hidden="true">
+        <svg id="ct-svg" width="1064" height="122" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="ct-rail__ghost ct-rail__ghost--a" id="ct-g1" d="" />
+          <path class="ct-rail__ghost ct-rail__ghost--b" id="ct-g2" d="" />
+          <path class="ct-rail__main" id="ct-main" d="" />
+          <path class="ct-rail__stem" id="ct-stem" d="" />
+        </svg>
+      </div>
+
+      <div class="ct-stations" id="ct-stations"></div>
+
+      <div class="ct-sr" role="status" aria-live="polite" aria-atomic="true" id="ct-live"></div>
+    </div>
+  </div>
+
+  <script>
+    /* Demo data — one config object, internal links only. */
+    const MILESTONES = [
+      { year: "2018", label: "First spark",       title: "One shared table.\nA world of ideas.",     text: "We began with two people, one shared table, and a simple belief: thoughtful design can turn small ideas into lasting possibilities.", image: "https://framerusercontent.com/images/SqHYZ17IogFcBVDNWujdLhEYp6M.jpg?width=720&height=480" },
+      { year: "2020", label: "A new direction",   title: "One clear vision.\nA voice of our own.",    text: "We brought strategy, identity, and digital into one practice, shaping a clear creative voice through patient work and a shared curiosity.", image: "https://framerusercontent.com/images/haGUcNWkPETXSyNaV1mXqYOTaqA.jpg?width=720&height=480" },
+      { year: "2022", label: "The turning point", title: "More curious minds.\nA wider perspective.", text: "We welcomed new minds and fresh perspectives, growing into a creative collective with more ways to explore, collaborate, and make things.", image: "https://framerusercontent.com/images/LUOsiChDBtu8fzfkfDXwKdZ5jxM.jpg?width=720&height=540" },
+      { year: "2024", label: "Beyond borders",    title: "New places to meet.\nA closer connection.", text: "We worked across cities and time zones, bringing people closer through global projects built on honest conversations, shared trust, and care.", image: "https://framerusercontent.com/images/25OGIKhNJQhRs6XQYJvzWepivkM.jpg?width=720&height=405" },
+      { year: "2026", label: "What comes next",   title: "New paths to follow.\nA future to shape.",  text: "We keep following new ideas, building lasting partnerships and useful experiences with the same curiosity that brought us around the table.", image: "https://framerusercontent.com/images/9aG7qJiLUTAdQwvLUxpCrMEYTg.jpg?width=720&height=540" }
+    ];
+
+    const DESIGN_W = 1064;
+    const STATION_W = 198.8;
+    const STATION_STEP = 212.8;
+    const STATION_LEFT0 = 7;
+    const BASE_Y = 94, APEX_Y = 29.6;
+    const SHOULDER = 144.4, CTRL_OUT = 60.3, CTRL_IN = 69.6;
+    const STROKE_MAIN_Y = 90, STROKE_APEX_Y = 28, STEM_TOP = 0;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const root = document.getElementById("ct-root");
+    const stationsEl = document.getElementById("ct-stations");
+    const card = document.getElementById("ct-card");
+    const badge = document.getElementById("ct-badge");
+    const imgA = document.getElementById("ct-img-a");
+    const imgB = document.getElementById("ct-img-b");
+    const eyebrow = document.getElementById("ct-eyebrow");
+    const titleEl = document.getElementById("ct-title");
+    const textEl = document.getElementById("ct-text");
+    const live = document.getElementById("ct-live");
+    const countEl = document.getElementById("ct-count");
+    const progressEl = document.getElementById("ct-progress");
+    const prevBtn = document.getElementById("ct-prev");
+    const nextBtn = document.getElementById("ct-next");
+    const g1 = document.getElementById("ct-g1");
+    const g2 = document.getElementById("ct-g2");
+    const mainPath = document.getElementById("ct-main");
+    const stem = document.getElementById("ct-stem");
+    const svg = document.getElementById("ct-svg");
+
+    let active = 2;
+    const stationEls = [];
+
+    /* preload images so the crossfade never flashes */
+    MILESTONES.forEach(m => { const i = new Image(); i.src = m.image; });
+
+    MILESTONES.forEach((m, i) => {
+      const btn = document.createElement("a");
+      btn.className = "ct-station";
+      btn.id = "ct-station-" + i;
+      btn.href = "#";
+      btn.setAttribute("role", "tab");
+      btn.setAttribute("aria-controls", "ct-card");
+      btn.setAttribute("aria-label", m.year + ": " + m.label.replace(/\n/g, " "));
+      btn.tabIndex = i === active ? 0 : -1;
+      btn.innerHTML =
+        '<span class="ct-station__dot" aria-hidden="true"></span>' +
+        '<span class="ct-station__year">' + m.year + "</span>" +
+        '<span class="ct-station__label">' + m.label + "</span>";
+      btn.addEventListener("click", (e) => { e.preventDefault(); select(i, true); });
+      btn.addEventListener("focus", () => select(i, false));
+      btn.addEventListener("mouseenter", () => select(i, false));
+      btn.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          const next = e.key === "ArrowRight"
+            ? Math.min(MILESTONES.length - 1, i + 1)
+            : Math.max(0, i - 1);
+          select(next, true);
+          stationEls[next].focus();
+        } else if (e.key === "Home") { e.preventDefault(); select(0, true); stationEls[0].focus(); }
+        else if (e.key === "End") { e.preventDefault(); select(MILESTONES.length - 1, true); stationEls[MILESTONES.length - 1].focus(); }
+      });
+      stationsEl.appendChild(btn);
+      stationEls.push(btn);
+
+      // progress segments
+      const seg = document.createElement("span");
+      seg.className = "ct-progress__seg";
+      progressEl.appendChild(seg);
+    });
+
+    prevBtn.addEventListener("click", () => select(Math.max(0, active - 1), true));
+    nextBtn.addEventListener("click", () => select(Math.min(MILESTONES.length - 1, active + 1), true));
+
+    function clampLeft(x) {
+      const rootW = root.clientWidth;
+      const cardW = card.offsetWidth || 330;
+      const min = 8;
+      const max = Math.max(min, rootW - cardW - 8);
+      return Math.min(Math.max(x, min), max);
+    }
+
+    function pathFor(apexX, baseY, apexY) {
+      const h1 = apexX - SHOULDER, c1 = apexX - CTRL_OUT, c2 = apexX - CTRL_IN;
+      const c3 = apexX + CTRL_IN, c4 = apexX + CTRL_OUT, h2 = apexX + SHOULDER;
+      return "M 0 " + baseY + " H " + h1.toFixed(2) +
+        " C " + c1.toFixed(2) + " " + baseY + ", " + c2.toFixed(2) + " " + apexY + ", " + apexX.toFixed(2) + " " + apexY +
+        " C " + c3.toFixed(2) + " " + apexY + ", " + c4.toFixed(2) + " " + baseY + ", " + h2.toFixed(2) + " " + baseY +
+        " H " + DESIGN_W;
+    }
+
+    function renderRail(apexX) {
+      g1.setAttribute("d", pathFor(apexX, BASE_Y, APEX_Y));
+      g2.setAttribute("d", pathFor(apexX, BASE_Y + 4, APEX_Y + 1.6));
+      mainPath.setAttribute("d", pathFor(apexX, STROKE_MAIN_Y, STROKE_APEX_Y));
+      stem.setAttribute("d", "M " + apexX.toFixed(2) + " " + STEM_TOP + " V " + STROKE_APEX_Y);
+    }
+
+    /* Crossfade: two <img> layers. Each layer carries the src it currently
+       shows, so a rapid re-select re-targets the same layer and the pending
+       onload for the old src can never commit the wrong picture. */
+    let frontLayer = imgA;
+    let pendingSrc = null;
+    function sameFile(el, src) {
+      // el.src is the browser-resolved absolute URL; compare on filename so
+      // a file:// path and the config value (with ?w=) still match.
+      if (!el.src) return false;
+      const a = el.src.split("/").pop().split("?")[0];
+      const b = String(src).split("/").pop().split("?")[0];
+      return a === b;
+    }
+    function renderImage(src) {
+      const back = frontLayer === imgA ? imgB : imgA;
+      if (sameFile(frontLayer, src)) { pendingSrc = null; return; }
+      if (sameFile(back, src)) {          // already showing/loading this one
+        pendingSrc = src;
+        if (back.complete && back.naturalWidth > 0 && !back.classList.contains("is-front")) {
+          requestAnimationFrame(() => { if (pendingSrc === src) {
+            const prev = frontLayer; frontLayer = back; pendingSrc = null;
+            back.classList.add("is-front"); prev.classList.remove("is-front");
+          }});
+        }
+        return;
+      }
+      pendingSrc = src;
+      const commit = () => {
+        if (pendingSrc !== src) return;   // superseded by a newer selection
+        const prevFront = frontLayer;
+        frontLayer = back;
+        pendingSrc = null;
+        back.classList.add("is-front");
+        prevFront.classList.remove("is-front");
+      };
+      if (reducedMotion) { commit(); return; }
+      if (back.complete && back.naturalWidth > 0) {
+        requestAnimationFrame(commit);
+      } else {
+        back.onload = () => requestAnimationFrame(commit);
+      }
+      back.src = src;
+    }
+
+    function renderCard(i) {
+      const m = MILESTONES[i];
+      card.setAttribute("aria-label", m.year + ": " + m.title.replace(/\n/g, " "));
+      badge.textContent = m.year;
+      renderImage(m.image);
+      eyebrow.textContent = m.label;
+      titleEl.textContent = m.title;
+      textEl.textContent = m.text;
+      live.textContent = m.year + ": " + m.title.replace(/\n/g, " ");
+      countEl.textContent = (i + 1) + " of " + MILESTONES.length;
+      prevBtn.disabled = i === 0;
+      nextBtn.disabled = i === MILESTONES.length - 1;
+      [...progressEl.children].forEach((seg, idx) => {
+        seg.classList.toggle("is-active", idx === i);
+        seg.classList.toggle("is-done", idx < i);
+      });
+    }
+
+    function apexFor(i) {
+      const scale = svg.getBoundingClientRect().width / DESIGN_W;
+      return (STATION_LEFT0 + STATION_STEP * i + STATION_W / 2) * scale;
+    }
+
+    function select(i, focus) {
+      if (i === active) return;
+      active = i;
+      stationEls.forEach((el, idx) => {
+        el.classList.toggle("is-active", idx === idx ? idx === i : false);
+        el.tabIndex = idx === i ? 0 : -1;
+      });
+      const apexX = apexFor(i);
+      renderRail(apexX);
+      renderCard(i);
+      const scale = root.clientWidth / DESIGN_W;
+      card.style.left = clampLeft(28 + (apexX - 165 * scale)) + "px";
+      if (focus) stationEls[i].focus();
+    }
+
+    function syncScale() {
+      const w = root.clientWidth - 56;
+      svg.style.width = w + "px";
+      const scale = w / DESIGN_W;
+      const box = document.getElementById("ct-stations");
+      box.style.width = w + "px";
+      stationEls.forEach((el, i) => {
+        el.style.left = ((STATION_LEFT0 + STATION_STEP * i) * scale) + "px";
+        el.style.width = (STATION_W * scale) + "px";
+      });
+      const apexX = apexFor(active);
+      renderRail(apexX);
+      card.style.left = clampLeft(28 + (apexX - 165 * scale)) + "px";
+    }
+
+    function init() {
+      stationEls.forEach((el, i) => el.classList.toggle("is-active", i === active));
+      renderCard(active);
+      syncScale();
+      renderRail(apexFor(active));
+      card.style.left = clampLeft(28 + (apexFor(active) - 165)) + "px";
+    }
+
+    window.addEventListener("resize", syncScale);
+    init();
+  </script>
+</body>
+</html>
