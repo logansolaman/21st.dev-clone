@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seadon Timeline</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /*
+      Seadon — brand timeline, built on the Contour Timeline component.
+      Reference component: https://contour-timeline.framer.website/ (by Matt)
+
+      Desktop  : the reference's contour-curve rail. Design width widened from
+                 1064px to 1915.2px so 9 milestones keep the original's station
+                 size (198.8px) and curve amplitude (64.4px lift) — the reference
+                 only fits 5 at 1064px.
+      Mobile   : follows the reference's own compact layout — year chips in a
+                 scrollable row on TOP, a straight 1px rule with a dot under the
+                 active year (no curve at this size, exactly as the reference
+                 does), then the card stacked below. Drag the chip row to scroll;
+                 tap to select.
+
+      Colours are Seadon theme tokens:
+        page  #f4f3f2 (scheme-7 background)   card  #ffffff (scheme-1/4)
+        ink   #022f4b (scheme-2/4/7 foreground)   accent #25cd62 (brand green)
+        border #e6e6e6 (scheme-1)
+      Type is FK Grotesk Neue, the theme's custom face, served from the store CDN.
+    */
+
+    @font-face {
+      font-family: "FK Grotesk Neue";
+      src: url("https://seadon-dev.myshopify.com/cdn/shop/t/4/assets/FKGroteskNeue-Regular.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "FK Grotesk Neue";
+      src: url("https://seadon-dev.myshopify.com/cdn/shop/t/4/assets/FKGroteskNeue-Medium.woff2") format("woff2");
+      font-weight: 500; font-style: normal; font-display: swap;
+    }
+
+    :root {
+      --page: #f4f3f2;
+      --card: #ffffff;
+      --line: #e6e6e6;
+      --text: #022f4b;
+      --muted: rgba(2, 47, 75, 0.55);
+      --accent: #25cd62;
+      --accent-ink: #12a84b;
+      --font: "FK Grotesk Neue", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--page);
+      font-family: var(--font);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .ct-stage {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .ct-root {
+      position: relative;
+      width: 100%;
+      max-width: 1120px;
+      height: 643px;
+      padding: 22px 28px 12px;
+      overflow: clip;
+    }
+
+    /* ---- selected card ---- */
+    .ct-card {
+      position: absolute;
+      top: 30px; left: 30px;
+      width: 330px;
+      min-height: 403px;
+      display: flex; flex-direction: column;
+      padding-top: 1px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 25px 50px -23px rgba(2, 47, 75, 0.22), 0 5px 12px -6px rgba(2, 47, 75, 0.08);
+      user-select: text;
+      z-index: 3;
+      transition: left 420ms cubic-bezier(0.16, 1, 0.3, 1);
+      text-decoration: none;
+    }
+    .ct-card__media {
+      position: relative; height: 166px; margin: 6px 6px 0;
+      border-radius: 13px; background: var(--line); overflow: hidden; flex-shrink: 0;
+    }
+    .ct-card__img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; pointer-events: none; opacity: 0; transition: opacity 420ms ease;
+    }
+    .ct-card__img.is-front { opacity: 1; z-index: 1; }
+    .ct-card__badge {
+      position: absolute; left: 13px; top: 13px; z-index: 2;
+      border-radius: 30px; padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.94); color: var(--text);
+      font-size: 10px; font-weight: 500; letter-spacing: 0.06em; line-height: 1;
+    }
+    .ct-card__body { padding: 22px 22px 8px; flex: 1 0 auto; }
+    .ct-card__eyebrow {
+      font-size: 10px; font-weight: 500; letter-spacing: 1px; line-height: 1.4;
+      text-transform: uppercase; color: var(--accent-ink); margin: 0;
+    }
+    .ct-card__title {
+      font-size: 22px; font-weight: 500; line-height: 25.52px;
+      letter-spacing: -0.01em; color: var(--text); margin: 11px 0 0;
+    }
+    .ct-card__text {
+      font-size: 13px; font-weight: 400; line-height: 20.15px;
+      letter-spacing: -0.195px; color: var(--text); margin: 10px 0 0;
+    }
+    .ct-card__text + .ct-card__text { margin-top: 8px; }
+    .ct-card__cta {
+      display: flex; align-items: center; gap: 8px;
+      padding-top: 17px; margin-top: 0;
+      font-size: 13px; font-weight: 500; color: var(--accent-ink);
+      cursor: pointer; border-radius: 6px; transition: opacity 200ms ease;
+    }
+    .ct-card__cta:hover { opacity: 0.72; }
+    .ct-card__cta svg { flex-shrink: 0; }
+
+    /* ---- rail (curve) ---- */
+    .ct-rail {
+      position: absolute; left: 28px; top: var(--rail-top, 433px); z-index: 1;
+      width: 100%; height: 122px;
+      pointer-events: none; overflow: visible;
+    }
+    .ct-rail__ghost { stroke: var(--line); stroke-width: 0.825; }
+    .ct-rail__ghost--a { opacity: 0.7; }
+    .ct-rail__ghost--b { opacity: 0.62; }
+    .ct-rail__main { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+    .ct-rail__stem { stroke: var(--accent); stroke-width: 1.5; }
+    /* straight rule used only in the compact layout */
+    .ct-rail__flat { stroke: var(--line); stroke-width: 1; fill: none; display: none; }
+
+    /* ---- stations ---- */
+    .ct-stations {
+      position: absolute; left: 28px; top: var(--stations-top, 501px); z-index: 2;
+      width: 100%; height: 122px;
+    }
+    .ct-station {
+      position: absolute; top: 0; width: 198.8px; min-height: 44px;
+      padding: 22px 4px 15px; border: 0; border-radius: 8px;
+      background: transparent; color: var(--muted);
+      cursor: pointer; text-align: center; text-decoration: none;
+      user-select: none; appearance: none; font-family: var(--font); display: block;
+      transition: color 260ms ease;
+    }
+    .ct-station__dot {
+      position: absolute; top: 19px; left: calc(50% - 3px);
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+      transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .ct-station__year {
+      display: inline-block; padding: 7px 9px; margin-top: 9px;
+      font-weight: 500; font-size: var(--year-fs, 34px); letter-spacing: -0.05em;
+      line-height: 1.2; white-space: nowrap;
+      max-width: 100%; transition: color 260ms ease;
+    }
+    .ct-station__label {
+      display: block; margin-top: 7px; padding: 0 5px;
+      font-weight: 500; font-size: var(--label-fs, 10px); letter-spacing: 0.45px;
+      line-height: 1.4; color: inherit; transition: color 260ms ease;
+    }
+    .ct-station.is-active { color: var(--accent-ink); }
+    .ct-station.is-active .ct-station__year { color: var(--accent-ink); }
+    .ct-station.is-active .ct-station__dot { transform: scale(1.5); }
+    .ct-station:hover .ct-station__year,
+    .ct-station:focus-visible .ct-station__year { color: var(--accent-ink); }
+    .ct-station:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+    /* ---- enhanced nav ---- */
+    .ct-nav {
+      position: absolute; right: 28px; top: 8px; z-index: 4;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ct-nav__btn {
+      width: 32px; height: 32px; display: grid; place-items: center;
+      border: 1px solid var(--line); border-radius: 50%;
+      background: var(--card); color: var(--text); cursor: pointer;
+      transition: background 180ms ease, color 180ms ease, opacity 180ms ease;
+    }
+    .ct-nav__btn:hover:not(:disabled) { background: var(--accent); color: #04231a; border-color: var(--accent); }
+    .ct-nav__btn:disabled { opacity: 0.4; cursor: default; }
+    .ct-nav__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .ct-nav__count {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.06em; color: var(--muted);
+      font-variant-numeric: tabular-nums; min-width: 52px; text-align: center;
+    }
+    .ct-progress { position: absolute; right: 28px; top: 46px; z-index: 4; display: flex; gap: 4px; }
+    .ct-progress__seg {
+      width: 12px; height: 3px; border-radius: 2px; background: var(--line);
+      transition: background 260ms ease, transform 260ms ease; transform-origin: center;
+    }
+    .ct-progress__seg.is-done { background: rgba(37, 205, 98, 0.5); }
+    .ct-progress__seg.is-active { background: var(--accent); transform: scaleY(1.6); }
+
+    .ct-sr {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+
+    /* ===================================================================
+       COMPACT LAYOUT — mirrors the reference's own mobile behaviour:
+       year chips on top -> straight rule + dot -> card below.
+       Breakpoint 809.98px matches the reference.
+       =================================================================== */
+    @media (max-width: 809.98px) {
+      .ct-stage { padding: 16px 0; align-items: flex-start; }
+      .ct-root {
+        width: 100%; max-width: 390px;   /* the reference locks to 390px */
+        height: auto;
+        padding: 20px 20px 24px;
+        overflow: visible;
+      }
+      .ct-nav { position: relative; right: auto; top: auto; justify-content: center; margin-bottom: 10px; }
+      .ct-progress { position: relative; right: auto; top: auto; justify-content: center; margin-bottom: 14px; }
+
+      /* year chips first, scrollable + drag */
+      .ct-stations {
+        position: relative; left: auto; top: auto;
+        width: 100%; height: auto;
+        display: flex; gap: 6px;
+        overflow-x: auto; overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        scroll-behavior: smooth;
+        padding: 2px 0 10px;
+        cursor: grab;
+        scroll-snap-type: x proximity;
+        /* fade affordance at both edges, like a scrollable chip rail */
+        mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+        -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+      }
+      .ct-stations::-webkit-scrollbar { display: none; }
+      .ct-stations.is-dragging { cursor: grabbing; scroll-behavior: auto; scroll-snap-type: none; }
+
+      .ct-station {
+        position: relative; left: auto !important;
+        flex: 0 0 auto;
+        width: auto !important; min-width: 0;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        color: var(--muted);
+        scroll-snap-align: center;
+        display: inline-flex; align-items: baseline; gap: 6px;
+        white-space: nowrap;
+      }
+      .ct-station.is-active {
+        background: var(--card);
+        border-color: var(--line);
+        box-shadow: 0 1px 3px rgba(2, 47, 75, 0.08);
+      }
+      .ct-station__dot { display: none; }
+      .ct-station__year {
+        font-size: 15px; letter-spacing: -0.02em; margin: 0; padding: 0; font-weight: 500;
+      }
+      .ct-station__label {
+        display: inline; margin: 0; padding: 0;
+        font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+        color: inherit; opacity: 0.85;
+      }
+
+      /* straight rule + dot, replacing the curve at this size */
+      .ct-rail {
+        position: relative; left: auto; top: auto;
+        width: 100%; height: 14px;
+        margin: 0 0 16px;
+        overflow: visible;
+      }
+      .ct-rail svg { display: none; }
+      .ct-rail::before {
+        content: ""; position: absolute; left: 0; right: 0; top: 0;
+        height: 1px; background: var(--line);
+      }
+      .ct-rail::after {
+        content: ""; position: absolute; top: -2.5px;
+        width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+        left: var(--dot-x, 0px);
+        transition: left 300ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* card below, stacked and full width */
+      .ct-card {
+        position: relative; top: auto; left: auto !important;
+        width: 100%; max-width: none;
+        min-height: 0; margin: 0;
+        transition: none;
+      }
+      .ct-card__media { height: 180px; }
+      .ct-card__body { padding: 18px 18px 6px; }
+      .ct-card__title { font-size: 20px; line-height: 24px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ct-card, .ct-station, .ct-station__year, .ct-station__dot,
+      .ct-card__img, .ct-progress__seg, .ct-nav__btn, .ct-stations, .ct-rail::after {
+        transition: none !important; scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ct-stage">
+    <div class="ct-root" id="ct-root" role="region" aria-label="Seadon milestones">
+
+      <div class="ct-nav" role="group" aria-label="Timeline navigation">
+        <button class="ct-nav__btn" id="ct-prev" type="button" aria-label="Previous milestone">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M16 10H4m5-5-5 5 5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="ct-nav__count" id="ct-count" aria-hidden="true">1 of 9</span>
+        <button class="ct-nav__btn" id="ct-next" type="button" aria-label="Next milestone">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="ct-progress" id="ct-progress" aria-hidden="true"></div>
+
+      <!-- stations BEFORE the rail/card so the compact layout stacks chips first -->
+      <div class="ct-stations" id="ct-stations"></div>
+
+      <div class="ct-rail" aria-hidden="true">
+        <svg id="ct-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="ct-rail__ghost ct-rail__ghost--a" id="ct-g1" d="" />
+          <path class="ct-rail__ghost ct-rail__ghost--b" id="ct-g2" d="" />
+          <path class="ct-rail__main" id="ct-main" d="" />
+          <path class="ct-rail__stem" id="ct-stem" d="" />
+        </svg>
+      </div>
+
+      <a class="ct-card" id="ct-card" href="#" aria-label="" tabindex="-1">
+        <div class="ct-card__media">
+          <span class="ct-card__badge" id="ct-badge">2018</span>
+          <img class="ct-card__img" id="ct-img-a" src="" alt="" />
+          <img class="ct-card__img" id="ct-img-b" src="" alt="" />
+        </div>
+        <div class="ct-card__body">
+          <p class="ct-card__eyebrow" id="ct-eyebrow"></p>
+          <h3 class="ct-card__title" id="ct-title"></h3>
+          <div id="ct-text-wrap"></div>
+          <span class="ct-card__cta">
+            Explore the story
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="pointer-events:none">
+              <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5"></path>
+            </svg>
+          </span>
+        </div>
+      </a>
+
+      <div class="ct-sr" role="status" aria-live="polite" aria-atomic="true" id="ct-live"></div>
+    </div>
+  </div>
+
+  <script>
+    /*
+      Milestone data. All body copy and headlines are verbatim from Seadon.
+      `label` is the only derived text — a short tag used for both the station
+      chip and the card eyebrow, mirroring how the reference component reuses
+      its short label in both places. Adjust freely.
+    */
+    const MILESTONES = [
+      {
+        year: "2018",
+        label: "Material first",
+        title: "BEFORE IT WAS THE STANDARD.",
+        body: [
+          "Back then, a sub-70g technical tee made from 100% recycled polyester didn't exist. So we developed one ourselves.",
+          "We also rethought everything around it \u2014 removing the plastic polybag, replacing plastic hangtag loops with natural string, and reducing unnecessary single-use plastic throughout production."
+        ],
+        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-daymaker-tee-pebble-gray-5.webp?v=1781321492"
+      },
+      {
+        year: "2019",
+        label: "Crowdfunded",
+        title: "LET THE PEOPLE DECIDE.",
+        body: [
+          "We didn't know whether Seadon would resonate with people out there. So instead of deciding that ourselves, we launched on Kickstarter \u2014 a crowdfunding platform where people choose which ideas they want to bring to life.",
+          "648 Trailblazers backed our first campaign. Seadon officially became a company, and our Kickstarter journey began."
+        ],
+        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-trailblazer-tee-seascape-blue-7.webp?v=1781321550"
+      },
+      {
+        year: "2020",
+        label: "New fabric",
+        title: "MERINO, REIMAGINED.",
+        body: [
+          "For our second Kickstarter, we introduced the Traveler Merino Tee.",
+          "Merino performs beautifully, but it can still feel itchy to some people. We blended it with cooling eucalyptus fibers for a smoother, softer feel \u2014 creating a signature fabric that remains part of Seadon today.",
+          "This was also the year Seadon.co launched."
+        ],
+        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-traveler-merino-tee-navy-blue-7.webp?v=1781321556"
+      },
+      {
+        year: "2021\u20132022",
+        label: "From the ocean",
+        title: "PERFORMANCE, INSPIRED BY THE OCEAN.",
+        body: [
+          "Discarded fishing nets became regenerated nylon \u2014 and the foundation for two Seadon staples: the Helios Trail Pants and Gale Jacket.",
+          "In 2021, GearJunkie named the Helios \u201cBest Lightweight Pant,\u201d giving our material-first approach one of its first major pieces of outside recognition."
+        ],
+        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-helios-trail-pants-marlin-blue-10.webp?v=1781321501"
+      },
+      {
+        year: "2023",
+        label: "Most technical",
+        title: "OUR MOST TECHNICAL PIECE YET.",
+        body: [
+          "The Gale ACT Puffer marked a new level of technical development for Seadon, combining advanced Japanese performance fabrics with technical insulation.",
+          "It also began a deeper journey into sourcing specialized materials from Japan \u2014 pushing us further into technical product development."
+        ],
+        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-gale-act-puffer-jacket-red-rock-1.webp?v=1781321530"
+      },
+      {
+        year: "2024",
+        label: "Refined",
+        title: "BUILT FROM WHAT WE LEARNED.",
+        body: [
+          "We took what we learned from the Helios Trail Pants and applied it to travel. Customers wanted the same lightweight comfort and movement with more secure storage, leading to the EXP Travel Pants.",
+          "We also evolved the Gale into Gale V2, refining its fabrics, construction, and prints around years of real-world feedback."
+        ],
+        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-unisex-exp-travel-pants-atlantic-blue-1.webp?v=1781321474"
+      },
+      {
+        year: "2025",
+        label: "Race proven",
+        title: "TESTED OUT THERE.",
+        body: [
+          "We took Seadon gear from Half Dome and the Big Sur Marathon to the TransJeju 100K, while becoming title sponsor and official apparel partner of the Mountains 2 Beach Marathon.",
+          "Seeing thousands of runners wearing Seadon on race day \u2014 and Gale V2 jackets on finishers after they crossed the line \u2014 made the reason we started Seadon feel more real than ever."
+        ],
+        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-gale-vs-jacket-vulcan-navy-1.webp?v=1781321500"
+      },
+      {
+        year: "2026",
+        label: "Rebuilt",
+        title: "RETHINK EVERYTHING.",
+        body: [
+          "After our biggest year of growth, we realized Seadon had outgrown the way we were operating. So we stepped back and began rebuilding from the ground up.",
+          "A new identity. A new Seadon.co. A fabric specialist in Taiwan. Sourcing, operations, and logistics closer to the source in Hong Kong. Better quality control. A custom-built Seadon Backer Program. And our 9th successful Kickstarter campaign.",
+          "Sometimes you take one step back to move two \u2014 or more \u2014 forward."
+        ],
+        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-men-s-gale-v2-jacket-ivy-green-1783394626397.jpg?v=1783394630"
+      },
+      {
+        year: "2027+",
+        label: "Next chapter",
+        title: "THE NEXT CHAPTER",
+        body: [
+          "Better materials. Better products. Closer to the source.",
+          "Built from everything we've learned so far."
+        ],
+        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-unisex-exp-travel-pants-black-sand-1783678841210.jpg?v=1783678844"
+      }
+    ];
+
+    /* ---- geometry (reference values, design width widened for 9 stations) ---- */
+    const LEFT0 = 7, STEP = 212.8, STATION_W = 198.8;
+    const DESIGN_W = 1915.2;                    // reference: 1064 for 5 stations
+    const BASE_Y = 94, APEX_Y = 29.6, LIFT = BASE_Y - APEX_Y;
+    const SHOULDER = 144.4, CTRL_OUT = 60.3, CTRL_IN = 69.6;
+    const STROKE_MAIN_Y = 90, STROKE_APEX_Y = 28;
+    const COMPACT = 809.98;                     // the reference's own breakpoint
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const root = document.getElementById("ct-root");
+    const stationsEl = document.getElementById("ct-stations");
+    const card = document.getElementById("ct-card");
+    const badge = document.getElementById("ct-badge");
+    const imgA = document.getElementById("ct-img-a");
+    const imgB = document.getElementById("ct-img-b");
+    const eyebrow = document.getElementById("ct-eyebrow");
+    const titleEl = document.getElementById("ct-title");
+    const textWrap = document.getElementById("ct-text-wrap");
+    const live = document.getElementById("ct-live");
+    const countEl = document.getElementById("ct-count");
+    const progressEl = document.getElementById("ct-progress");
+    const prevBtn = document.getElementById("ct-prev");
+    const nextBtn = document.getElementById("ct-next");
+    const g1 = document.getElementById("ct-g1");
+    const g2 = document.getElementById("ct-g2");
+    const mainPath = document.getElementById("ct-main");
+    const stem = document.getElementById("ct-stem");
+    const svg = document.getElementById("ct-svg");
+    const rail = document.querySelector(".ct-rail");
+
+    let active = 0;
+    const stationEls = [];
+    const isCompact = () => window.innerWidth <= COMPACT;
+
+    MILESTONES.forEach((m) => { const i = new Image(); i.src = m.image; });
+
+    MILESTONES.forEach((m, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "ct-station";
+      btn.id = "ct-station-" + i;
+      btn.setAttribute("role", "tab");
+      btn.setAttribute("aria-controls", "ct-card");
+      btn.setAttribute("aria-label", m.year + ": " + m.title.replace(/\n/g, " "));
+      btn.tabIndex = i === active ? 0 : -1;
+      btn.innerHTML =
+        '<span class="ct-station__dot" aria-hidden="true"></span>' +
+        '<span class="ct-station__year">' + m.year + "</span>" +
+        '<span class="ct-station__label">' + m.label + "</span>";
+      btn.addEventListener("click", () => select(i, true));
+      btn.addEventListener("focus", () => select(i, false));
+      btn.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          const n = e.key === "ArrowRight" ? Math.min(MILESTONES.length - 1, i + 1) : Math.max(0, i - 1);
+          select(n, true);
+        } else if (e.key === "Home") { e.preventDefault(); select(0, true); }
+        else if (e.key === "End") { e.preventDefault(); select(MILESTONES.length - 1, true); }
+      });
+      stationsEl.appendChild(btn);
+      stationEls.push(btn);
+
+      const seg = document.createElement("span");
+      seg.className = "ct-progress__seg";
+      progressEl.appendChild(seg);
+    });
+
+    prevBtn.addEventListener("click", () => select(Math.max(0, active - 1), true));
+    nextBtn.addEventListener("click", () => select(Math.min(MILESTONES.length - 1, active + 1), true));
+
+    /* ---- drag-to-scroll for the compact chip row ---- */
+    (() => {
+      let down = false, startX = 0, startScroll = 0, moved = 0;
+      stationsEl.addEventListener("pointerdown", (e) => {
+        if (!isCompact()) return;
+        down = true; moved = 0; startX = e.clientX; startScroll = stationsEl.scrollLeft;
+        stationsEl.classList.add("is-dragging");
+      });
+      stationsEl.addEventListener("pointermove", (e) => {
+        if (!down) return;
+        const dx = e.clientX - startX;
+        moved = Math.max(moved, Math.abs(dx));
+        stationsEl.scrollLeft = startScroll - dx;
+        if (moved > 4) e.preventDefault();
+      });
+      const end = () => { down = false; stationsEl.classList.remove("is-dragging"); };
+      stationsEl.addEventListener("pointerup", end);
+      stationsEl.addEventListener("pointercancel", end);
+      stationsEl.addEventListener("pointerleave", end);
+      /* suppress the click that follows a real drag */
+      stationsEl.addEventListener("click", (e) => {
+        if (moved > 6) { e.preventDefault(); e.stopPropagation(); moved = 0; }
+      }, true);
+    })();
+
+    function clampLeft(x, cardW) {
+      const rootW = root.clientWidth;
+      return Math.min(Math.max(x, 28), Math.max(28, rootW - (cardW || 330) - 28));
+    }
+
+    function pathFor(apexX, baseY, apexY) {
+      const h1 = apexX - SHOULDER, c1 = apexX - CTRL_OUT, c2 = apexX - CTRL_IN;
+      const c3 = apexX + CTRL_IN, c4 = apexX + CTRL_OUT, h2 = apexX + SHOULDER;
+      return "M 0 " + baseY + " H " + h1.toFixed(2) +
+        " C " + c1.toFixed(2) + " " + baseY + ", " + c2.toFixed(2) + " " + apexY + ", " + apexX.toFixed(2) + " " + apexY +
+        " C " + c3.toFixed(2) + " " + apexY + ", " + c4.toFixed(2) + " " + baseY + ", " + h2.toFixed(2) + " " + baseY +
+        " H " + DESIGN_W;
+    }
+
+    /* scale: how many design px map into the current rail width */
+    let scale = 1;
+    function renderRail(apexX) {
+      g1.setAttribute("d", pathFor(apexX, BASE_Y, APEX_Y));
+      g2.setAttribute("d", pathFor(apexX, BASE_Y + 4, APEX_Y + 1.6));
+      mainPath.setAttribute("d", pathFor(apexX, STROKE_MAIN_Y, STROKE_APEX_Y));
+      stem.setAttribute("d", "M " + apexX.toFixed(2) + " 0 V " + STROKE_APEX_Y);
+    }
+
+    let frontLayer = imgA, pendingSrc = null;
+    function sameFile(el, src) {
+      if (!el.src) return false;
+      return el.src.split("/").pop().split("?")[0] === String(src).split("/").pop().split("?")[0];
+    }
+    function renderImage(src) {
+      const back = frontLayer === imgA ? imgB : imgA;
+      if (sameFile(frontLayer, src)) { pendingSrc = null; return; }
+      if (sameFile(back, src)) { pendingSrc = src; return; }
+      pendingSrc = src;
+      const commit = () => {
+        if (pendingSrc !== src) return;
+        const prev = frontLayer; frontLayer = back; pendingSrc = null;
+        back.classList.add("is-front"); prev.classList.remove("is-front");
+      };
+      if (reducedMotion) { commit(); return; }
+      if (back.complete && back.naturalWidth > 0) requestAnimationFrame(commit);
+      else back.onload = () => requestAnimationFrame(commit);
+      back.src = src;
+    }
+
+    function renderCard(i) {
+      const m = MILESTONES[i];
+      card.setAttribute("aria-label", m.year + ": " + m.title);
+      badge.textContent = m.year;
+      renderImage(m.image);
+      eyebrow.textContent = m.label;
+      titleEl.textContent = m.title;
+      textWrap.innerHTML = "";
+      m.body.forEach((para) => {
+        const p = document.createElement("p");
+        p.className = "ct-card__text";
+        p.textContent = para;
+        textWrap.appendChild(p);
+      });
+      live.textContent = m.year + ", " + m.title;
+      countEl.textContent = (i + 1) + " of " + MILESTONES.length;
+      prevBtn.disabled = i === 0;
+      nextBtn.disabled = i === MILESTONES.length - 1;
+      [...progressEl.children].forEach((seg, idx) => {
+        seg.classList.toggle("is-active", idx === i);
+        seg.classList.toggle("is-done", idx < i);
+      });
+      /* compact: keep the active chip in view */
+      if (isCompact()) {
+        const el = stationEls[i];
+        const target = el.offsetLeft - (stationsEl.clientWidth - el.offsetWidth) / 2;
+        stationsEl.scrollTo({ left: Math.max(0, target), behavior: reducedMotion ? "auto" : "smooth" });
+        /* dot under the active chip */
+        const cx = el.offsetLeft + el.offsetWidth / 2 - stationsEl.scrollLeft;
+        rail.style.setProperty("--dot-x", Math.max(0, Math.min(stationsEl.clientWidth - 6, cx)) + "px");
+      }
+    }
+
+    function apexFor(i) { return (LEFT0 + STEP * i + STATION_W / 2) * scale; }
+
+    /* The reference pins the card at 403px tall. Seadon copy runs to 2-3
+       paragraphs, so the card grows — push the rail band beneath it rather
+       than let the card cover the first dots. */
+    function layoutBelowCard() {
+      if (isCompact()) return;
+      const GAP = 16;
+      const cardBottom = card.offsetTop + card.offsetHeight + GAP;
+      const MIN_RAIL = 433;               // the reference's own offset
+      const railTop = Math.max(MIN_RAIL, cardBottom);
+      root.style.setProperty("--rail-top", railTop + "px");
+      root.style.setProperty("--stations-top", (railTop + 68) + "px");
+      const needed = railTop + 68 + 122 + 12;
+      if (root.clientHeight < needed) root.style.height = needed + "px";
+    }
+
+    function select(i, focus) {
+      if (i === active) return;
+      active = i;
+      stationEls.forEach((el, idx) => {
+        el.classList.toggle("is-active", idx === i);
+        el.tabIndex = idx === i ? 0 : -1;
+      });
+      renderRail(apexFor(i));
+      renderCard(i);
+      if (!isCompact()) card.style.left = clampLeft(28 + (apexFor(i) - 165 * scale)) + "px";
+      if (focus) stationEls[i].focus();
+    }
+
+    function syncScale() {
+      const compact = isCompact();
+      if (compact) {
+        root.style.removeProperty("--year-fs");
+        root.style.removeProperty("--label-fs");
+        root.style.removeProperty("--rail-top");
+        root.style.removeProperty("--stations-top");
+        root.style.removeProperty("height");
+        stationEls.forEach((el) => { el.style.left = ""; });
+        card.style.left = "";
+        renderRail(0);
+        renderCard(active);
+        return;
+      }
+      const w = root.clientWidth - 56;
+      scale = w / DESIGN_W;
+      /* Scale type with the station so long years (2021-2022, 2027+) never wrap. */
+      root.style.setProperty("--year-fs", (34 * scale).toFixed(2) + "px");
+      root.style.setProperty("--label-fs", Math.max(9, 10 * scale).toFixed(2) + "px");
+      svg.setAttribute("width", DESIGN_W);
+      svg.setAttribute("height", 122);
+      svg.setAttribute("viewBox", "0 0 " + DESIGN_W + " 122");
+      svg.style.width = w + "px";
+      stationsEl.style.width = w + "px";
+      stationEls.forEach((el, i) => {
+        el.style.left = ((LEFT0 + STEP * i) * scale) + "px";
+        el.style.width = (STATION_W * scale) + "px";
+      });
+      renderRail(apexFor(active));
+      card.style.left = clampLeft(28 + (apexFor(active) - 165 * scale)) + "px";
+      layoutBelowCard();
+    }
+
+    let lastCompact = null;
+    function onResize() {
+      const c = isCompact();
+      if (c !== lastCompact) { lastCompact = c; select(0, false); active = 0; syncScale(); renderCard(0); stationEls.forEach((el, i) => { el.classList.toggle("is-active", i === 0); el.tabIndex = i === 0 ? 0 : -1; }); }
+      else syncScale();
+    }
+
+    function init() {
+      lastCompact = isCompact();
+      const start = 7;                     // 2026 — "RETHINK EVERYTHING."
+      active = start;
+      stationEls.forEach((el, i) => { el.classList.toggle("is-active", i === active); el.tabIndex = i === active ? 0 : -1; });
+      renderCard(active);
+      syncScale();
+      renderRail(apexFor(active));
+    }
+
+    window.addEventListener("resize", onResize);
+    init();
+  </script>
+</body>
+</html>
