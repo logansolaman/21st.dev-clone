@@ -92,15 +92,60 @@
       transition: left 420ms cubic-bezier(0.16, 1, 0.3, 1);
       text-decoration: none;
     }
+    /* ---- media: aspect-ratio slider ----
+       The media box is a native <img> so its box follows the source ratio:
+       landscape sources stay landscape, portrait sources stay portrait.
+       The ::before reserves the space before decode, so the card never jumps. */
     .ct-card__media {
-      position: relative; height: 166px; margin: 6px 6px 0;
-      border-radius: 13px; background: var(--line); overflow: hidden; flex-shrink: 0;
+      position: relative; margin: 6px 6px 0;
+      border-radius: 13px; background: var(--line);
+      overflow: hidden; flex-shrink: 0;
+      isolation: isolate;
+    }
+    .ct-card__media::before {
+      content: ""; display: block; padding-top: var(--media-ratio, 62.5%);
     }
     .ct-card__img {
       position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; pointer-events: none; opacity: 0; transition: opacity 420ms ease;
+      object-fit: contain;          /* never crop — the whole frame is visible */
+      background: var(--line);
+      pointer-events: none; opacity: 0; transition: opacity 420ms ease;
     }
     .ct-card__img.is-front { opacity: 1; z-index: 1; }
+
+    /* slider chrome */
+    .ct-media__nav {
+      position: absolute; inset: auto 0 0 0; z-index: 3;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; pointer-events: none;
+      background: linear-gradient(180deg, rgba(2,47,75,0) 0%, rgba(2,47,75,0.45) 100%);
+      opacity: 0; transition: opacity 220ms ease;
+    }
+    .ct-card__media:hover .ct-media__nav,
+    .ct-card__media:focus-within .ct-media__nav { opacity: 1; }
+    .ct-media__arrow {
+      pointer-events: auto;
+      width: 30px; height: 30px; display: grid; place-items: center;
+      border: 1px solid rgba(255,255,255,0.55); border-radius: 50%;
+      background: rgba(255,255,255,0.92); color: var(--text); cursor: pointer;
+      transition: background 160ms ease, opacity 160ms ease;
+    }
+    .ct-media__arrow:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
+    .ct-media__arrow:disabled { opacity: 0.4; cursor: default; }
+    .ct-media__arrow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .ct-media__dots { display: flex; gap: 6px; pointer-events: auto; }
+    .ct-media__dot {
+      width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%;
+      background: rgba(255,255,255,0.5); cursor: pointer;
+      transition: background 200ms ease, transform 200ms ease;
+    }
+    .ct-media__dot.is-active { background: #fff; transform: scale(1.25); }
+    .ct-media__dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .ct-media__count {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+      color: #fff; font-variant-numeric: tabular-nums; pointer-events: none;
+      text-shadow: 0 1px 2px rgba(2,47,75,0.45);
+    }
     .ct-card__badge {
       position: absolute; left: 13px; top: 13px; z-index: 2;
       border-radius: 30px; padding: 6px 10px;
@@ -131,9 +176,22 @@
     .ct-card__cta svg { flex-shrink: 0; }
 
     /* ---- rail (curve) ---- */
+    /* The rail band never exceeds the viewport: it is a horizontal scroller
+       whose inner track carries the design-width curve + stations. Drag it. */
+    .ct-rail-wrap {
+      position: absolute; left: 28px; top: var(--rail-top, 433px); z-index: 2;
+      right: 28px; height: 190px;
+      overflow-x: auto; overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      cursor: grab;
+      overscroll-behavior-x: contain;
+    }
+    .ct-rail-wrap::-webkit-scrollbar { display: none; }
+    .ct-rail-wrap.is-dragging { cursor: grabbing; scroll-behavior: auto; }
+    .ct-rail-track { position: relative; height: 190px; }
     .ct-rail {
-      position: absolute; left: 28px; top: var(--rail-top, 433px); z-index: 1;
-      width: 100%; height: 122px;
+      position: absolute; left: 0; top: 0;
       pointer-events: none; overflow: visible;
     }
     .ct-rail__ghost { stroke: var(--line); stroke-width: 0.825; }
@@ -145,9 +203,10 @@
     .ct-rail__flat { stroke: var(--line); stroke-width: 1; fill: none; display: none; }
 
     /* ---- stations ---- */
+    /* stations live inside the same scroller as the curve, so they always agree */
     .ct-stations {
-      position: absolute; left: 28px; top: var(--stations-top, 501px); z-index: 2;
-      width: 100%; height: 122px;
+      position: absolute; left: 0; top: 68px; z-index: 3;
+      height: 122px;
     }
     .ct-station {
       position: absolute; top: 0; width: 198.8px; min-height: 44px;
@@ -332,22 +391,35 @@
       <div class="ct-progress" id="ct-progress" aria-hidden="true"></div>
 
       <!-- stations BEFORE the rail/card so the compact layout stacks chips first -->
-      <div class="ct-stations" id="ct-stations"></div>
-
-      <div class="ct-rail" aria-hidden="true">
-        <svg id="ct-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path class="ct-rail__ghost ct-rail__ghost--a" id="ct-g1" d="" />
-          <path class="ct-rail__ghost ct-rail__ghost--b" id="ct-g2" d="" />
-          <path class="ct-rail__main" id="ct-main" d="" />
-          <path class="ct-rail__stem" id="ct-stem" d="" />
-        </svg>
+      <div class="ct-rail-wrap" id="ct-rail-wrap" tabindex="0" role="group" aria-label="Timeline rail, scroll or drag">
+        <div class="ct-rail-track" id="ct-rail-track">
+          <div class="ct-rail" aria-hidden="true">
+            <svg id="ct-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="ct-rail__ghost ct-rail__ghost--a" id="ct-g1" d="" />
+              <path class="ct-rail__ghost ct-rail__ghost--b" id="ct-g2" d="" />
+              <path class="ct-rail__main" id="ct-main" d="" />
+              <path class="ct-rail__stem" id="ct-stem" d="" />
+            </svg>
+          </div>
+          <div class="ct-stations" id="ct-stations"></div>
+        </div>
       </div>
 
-      <a class="ct-card" id="ct-card" href="#" aria-label="" tabindex="-1">
-        <div class="ct-card__media">
+      <div class="ct-card" id="ct-card" role="group" aria-label="" tabindex="-1">
+        <div class="ct-card__media" id="ct-media" role="img" aria-label="">
           <span class="ct-card__badge" id="ct-badge">2018</span>
           <img class="ct-card__img" id="ct-img-a" src="" alt="" />
           <img class="ct-card__img" id="ct-img-b" src="" alt="" />
+          <div class="ct-media__nav">
+            <button class="ct-media__arrow" id="ct-media-prev" type="button" aria-label="Previous image">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16 10H4m5-5-5 5 5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="ct-media__dots" id="ct-media-dots" role="group" aria-label="Images"></div>
+            <button class="ct-media__arrow" id="ct-media-next" type="button" aria-label="Next image">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+          <span class="ct-media__count" id="ct-media-count" hidden></span>
         </div>
         <div class="ct-card__body">
           <p class="ct-card__eyebrow" id="ct-eyebrow"></p>
@@ -360,7 +432,7 @@
             </svg>
           </span>
         </div>
-      </a>
+      </div>
 
       <div class="ct-sr" role="status" aria-live="polite" aria-atomic="true" id="ct-live"></div>
     </div>
@@ -382,7 +454,11 @@
           "Back then, a sub-70g technical tee made from 100% recycled polyester didn't exist. So we developed one ourselves.",
           "We also rethought everything around it \u2014 removing the plastic polybag, replacing plastic hangtag loops with natural string, and reducing unnecessary single-use plastic throughout production."
         ],
-        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-daymaker-tee-pebble-gray-5.webp?v=1781321492"
+        images: [
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-daymaker-tee-pebble-gray-5.webp?v=1781321492",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-daymaker-tee-cloud-gray-6.webp?v=1781321488",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-daymaker-tee-elm-green-5.webp?v=1781321490"
+        ]
       },
       {
         year: "2019",
@@ -392,7 +468,11 @@
           "We didn't know whether Seadon would resonate with people out there. So instead of deciding that ourselves, we launched on Kickstarter \u2014 a crowdfunding platform where people choose which ideas they want to bring to life.",
           "648 Trailblazers backed our first campaign. Seadon officially became a company, and our Kickstarter journey began."
         ],
-        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-trailblazer-tee-seascape-blue-7.webp?v=1781321550"
+        images: [
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-trailblazer-tee-seascape-blue-7.webp?v=1781321550",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-trailblazer-tee-charcoal-5.webp?v=1781321538",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-trailblazer-tee-glacier-green-7.webp?v=1781321542"
+        ]
       },
       {
         year: "2020",
@@ -403,7 +483,11 @@
           "Merino performs beautifully, but it can still feel itchy to some people. We blended it with cooling eucalyptus fibers for a smoother, softer feel \u2014 creating a signature fabric that remains part of Seadon today.",
           "This was also the year Seadon.co launched."
         ],
-        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-traveler-merino-tee-navy-blue-7.webp?v=1781321556"
+        images: [
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-traveler-merino-tee-navy-blue-7.webp?v=1781321556",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-traveler-merino-tee-peppercorn-8.webp?v=1781321557",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-women-s-traveler-merino-tee-navy-blue-1783674433831.jpg?v=1783674438"
+        ]
       },
       {
         year: "2021\u20132022",
@@ -413,7 +497,12 @@
           "Discarded fishing nets became regenerated nylon \u2014 and the foundation for two Seadon staples: the Helios Trail Pants and Gale Jacket.",
           "In 2021, GearJunkie named the Helios \u201cBest Lightweight Pant,\u201d giving our material-first approach one of its first major pieces of outside recognition."
         ],
-        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-helios-trail-pants-marlin-blue-10.webp?v=1781321501"
+        images: [
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-helios-trail-pants-marlin-blue-10.webp?v=1781321501",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-helios-trail-pants-riverrock-charcoal-6.webp?v=1781321503",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-helios-trail-pants-seagrass-green-7.webp?v=1781321504",
+          "https://seadon-dev.myshopify.com/cdn/shop/t/4/assets/backer-landing-1_93_sky2.webp"
+        ]
       },
       {
         year: "2023",
@@ -423,7 +512,11 @@
           "The Gale ACT Puffer marked a new level of technical development for Seadon, combining advanced Japanese performance fabrics with technical insulation.",
           "It also began a deeper journey into sourcing specialized materials from Japan \u2014 pushing us further into technical product development."
         ],
-        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-gale-act-puffer-jacket-red-rock-1.webp?v=1781321530"
+        images: [
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-gale-act-puffer-jacket-red-rock-1.webp?v=1781321530",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-gale-act-puffer-jacket-balkan-black-1.webp?v=1781321561",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-womens-gale-act-puffer-jacket-blue-morpho-3.webp?v=1781321611"
+        ]
       },
       {
         year: "2024",
@@ -433,7 +526,11 @@
           "We took what we learned from the Helios Trail Pants and applied it to travel. Customers wanted the same lightweight comfort and movement with more secure storage, leading to the EXP Travel Pants.",
           "We also evolved the Gale into Gale V2, refining its fabrics, construction, and prints around years of real-world feedback."
         ],
-        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-unisex-exp-travel-pants-atlantic-blue-1.webp?v=1781321474"
+        images: [
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-unisex-exp-travel-pants-atlantic-blue-1.webp?v=1781321474",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-unisex-exp-travel-pants-mid-gray-1.webp?v=1781321479",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-unisex-exp-travel-pants-dark-olive-1.webp?v=1781321477"
+        ]
       },
       {
         year: "2025",
@@ -443,7 +540,11 @@
           "We took Seadon gear from Half Dome and the Big Sur Marathon to the TransJeju 100K, while becoming title sponsor and official apparel partner of the Mountains 2 Beach Marathon.",
           "Seeing thousands of runners wearing Seadon on race day \u2014 and Gale V2 jackets on finishers after they crossed the line \u2014 made the reason we started Seadon feel more real than ever."
         ],
-        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-gale-vs-jacket-vulcan-navy-1.webp?v=1781321500"
+        images: [
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-gale-vs-jacket-vulcan-navy-1.webp?v=1781321500",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-gale-vs-jacket-marron-red-1.webp?v=1781321498",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-mens-gale-vs-jacket-pine-green-1.webp?v=1781321501"
+        ]
       },
       {
         year: "2026",
@@ -454,7 +555,12 @@
           "A new identity. A new Seadon.co. A fabric specialist in Taiwan. Sourcing, operations, and logistics closer to the source in Hong Kong. Better quality control. A custom-built Seadon Backer Program. And our 9th successful Kickstarter campaign.",
           "Sometimes you take one step back to move two \u2014 or more \u2014 forward."
         ],
-        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-men-s-gale-v2-jacket-ivy-green-1783394626397.jpg?v=1783394630"
+        images: [
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/gale_v2.jpg?v=1787576629",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-men-s-gale-v2-jacket-ivy-green-1783394626397.jpg?v=1783394630",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-men-s-gale-v2-jacket-blue-peak-camo-1783391529689.jpg?v=1783391534",
+          "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-men-s-gale-v2-jacket-gray-peak-camo-1783392141632.jpg?v=1783392145"
+        ]
       },
       {
         year: "2027+",
@@ -464,7 +570,7 @@
           "Better materials. Better products. Closer to the source.",
           "Built from everything we've learned so far."
         ],
-        image: "https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-unisex-exp-travel-pants-black-sand-1783678841210.jpg?v=1783678844"
+        images: ["https://cdn.shopify.com/s/files/1/0940/1709/3879/files/seadon-unisex-exp-travel-pants-black-sand-1783678841210.jpg?v=1783678844"]
       }
     ];
 
@@ -498,12 +604,14 @@
     const stem = document.getElementById("ct-stem");
     const svg = document.getElementById("ct-svg");
     const rail = document.querySelector(".ct-rail");
+    const railWrap = document.getElementById("ct-rail-wrap");
+    const railTrack = document.getElementById("ct-rail-track");
 
     let active = 0;
     const stationEls = [];
     const isCompact = () => window.innerWidth <= COMPACT;
 
-    MILESTONES.forEach((m) => { const i = new Image(); i.src = m.image; });
+    MILESTONES.forEach((m) => (m.images || []).forEach((src) => { const i = new Image(); i.src = src; }));
 
     MILESTONES.forEach((m, i) => {
       const btn = document.createElement("button");
@@ -587,32 +695,155 @@
       stem.setAttribute("d", "M " + apexX.toFixed(2) + " 0 V " + STROKE_APEX_Y);
     }
 
-    let frontLayer = imgA, pendingSrc = null;
+    /* ---- media slider ----
+       Each milestone owns an images[] list. --media-ratio is set from the
+       decoded source so landscape frames render landscape and portrait frames
+       render portrait; the ::before keeps the box reserved in the meantime. */
+    let frontLayer = imgA, slideIdx = 0, slideList = [];
+    /* Monotonic request id. Every request takes a number; only the newest may
+       commit. Two click-steps overwrite the SAME back layer, so any commit
+       belonging to a superseded request must be dropped — otherwise the
+       counter and the image on screen drift apart. */
+    let slideReq = 0, slidePending = false;
+
     function sameFile(el, src) {
       if (!el.src) return false;
       return el.src.split("/").pop().split("?")[0] === String(src).split("/").pop().split("?")[0];
     }
-    function renderImage(src) {
-      const back = frontLayer === imgA ? imgB : imgA;
-      if (sameFile(frontLayer, src)) { pendingSrc = null; return; }
-      if (sameFile(back, src)) { pendingSrc = src; return; }
-      pendingSrc = src;
-      const commit = () => {
-        if (pendingSrc !== src) return;
-        const prev = frontLayer; frontLayer = back; pendingSrc = null;
-        back.classList.add("is-front"); prev.classList.remove("is-front");
+
+    /* ratio comes from the SOURCE we are showing, not from whatever image
+       happens to be on top — that is what kept desyncing */
+    function setRatioFor(src) {
+      const probe = new Image();
+      probe.onload = probe.onerror = () => {
+        if (probe.naturalWidth) {
+          root.style.setProperty("--media-ratio", ((probe.naturalHeight / probe.naturalWidth) * 100).toFixed(3) + "%");
+        } else {
+          root.style.setProperty("--media-ratio", "75%");
+        }
+        layoutBelowCard();
       };
-      if (reducedMotion) { commit(); return; }
-      if (back.complete && back.naturalWidth > 0) requestAnimationFrame(commit);
-      else back.onload = () => requestAnimationFrame(commit);
-      back.src = src;
+      probe.src = src;
+      if (probe.complete && probe.naturalWidth) {
+        root.style.setProperty("--media-ratio", ((probe.naturalHeight / probe.naturalWidth) * 100).toFixed(3) + "%");
+        layoutBelowCard();
+      }
     }
+
+    function showImage(src) {
+      const id = ++slideReq;
+      const back = frontLayer === imgA ? imgB : imgA;
+      if (sameFile(frontLayer, src)) { slidePending = false; return; }
+      slidePending = true;
+      const commit = () => {
+        if (id !== slideReq) return;          // superseded: a newer slide is coming
+        frontLayer = back;
+        slidePending = false;
+        /* invariant: exactly one layer is front. Removing from the CURRENT front
+           rather than the captured `prev` keeps that true even if a commit was
+           interleaved — otherwise add/remove can cancel and nothing shows. */
+        [imgA, imgB].forEach((el) => {
+          if (el === frontLayer) el.classList.add("is-front");
+          else el.classList.remove("is-front");
+        });
+      };
+      if (sameFile(back, src)) { commit(); return; }
+      if (reducedMotion) { commit(); return; }
+      back.onload = () => commit();
+      back.onerror = () => { if (id === slideReq) slidePending = false; };
+      back.src = src;
+      if (back.complete && back.naturalWidth > 0) commit();
+    }
+
+    /* the slider is only blocked while the CURRENT request is still in flight */
+    function slideBusy() { return slidePending; }
+
+    /* The card holds interactive controls (slider arrows, dots, swipe).
+       Swallow their bubbling so no click can ever trigger a navigation. */
+    document.getElementById("ct-card").addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    const mediaCount = document.getElementById("ct-media-count");
+    const mediaDotsEl = document.getElementById("ct-media-dots");
+    const mediaPrevBtn = document.getElementById("ct-media-prev");
+    const mediaNextBtn = document.getElementById("ct-media-next");
+
+    function renderSliderChrome() {
+      const n = slideList.length;
+      mediaDotsEl.innerHTML = "";
+      if (n > 1) {
+        slideList.forEach((src, i) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "ct-media__dot" + (i === slideIdx ? " is-active" : "");
+          b.setAttribute("aria-label", "Image " + (i + 1) + " of " + n);
+          b.addEventListener("click", (e) => { e.stopPropagation(); if (slideBusy()) return; gotoSlide(i); });
+          mediaDotsEl.appendChild(b);
+        });
+        mediaCount.hidden = false;
+        mediaCount.textContent = (slideIdx + 1) + " / " + n;
+      } else {
+        mediaCount.hidden = true;
+      }
+      mediaPrevBtn.hidden = n <= 1;
+      mediaNextBtn.hidden = n <= 1;
+      mediaPrevBtn.disabled = slideIdx === 0;
+      mediaNextBtn.disabled = slideIdx === n - 1;
+    }
+
+    function gotoSlide(i) {
+      if (!slideList.length) return;
+      const n = Math.max(0, Math.min(slideList.length - 1, i));
+      if (n === slideIdx) return;
+      slideIdx = n;
+      setRatioFor(slideList[slideIdx]);
+      showImage(slideList[slideIdx]);
+      renderSliderChrome();
+      const mediaEl = document.getElementById("ct-media");
+      const lbl = card.getAttribute("aria-label") || "";
+      if (mediaEl) mediaEl.setAttribute("aria-label", lbl + " — image " + (slideIdx + 1) + " of " + slideList.length);
+    }
+
+    /* guard BEFORE advancing: showImage may clear pendingSrc synchronously */
+    function step(delta) {
+      if (!slideList.length) return;
+      const n = slideIdx + delta;
+      if (n < 0 || n >= slideList.length) return;
+      if (slideBusy()) return;
+      gotoSlide(n);
+    }
+    mediaPrevBtn.addEventListener("click", (e) => { e.stopPropagation(); step(-1); });
+    mediaNextBtn.addEventListener("click", (e) => { e.stopPropagation(); step(1); });
+
+    /* swipe the image area */
+    (() => {
+      let sx = 0, active = false;
+      const media = document.getElementById("ct-media");
+      media.addEventListener("pointerdown", (e) => {
+        if (e.target.closest(".ct-media__arrow, .ct-media__dot")) return;
+        active = true; sx = e.clientX;
+      });
+      media.addEventListener("pointerup", (e) => {
+        if (!active) return;
+        active = false;
+        const dx = e.clientX - sx;
+        if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
+      });
+      media.addEventListener("pointercancel", () => { active = false; });
+    })();
 
     function renderCard(i) {
       const m = MILESTONES[i];
       card.setAttribute("aria-label", m.year + ": " + m.title);
       badge.textContent = m.year;
-      renderImage(m.image);
+      slideList = m.images || [];
+      slideIdx = 0;
+      const mediaEl = document.getElementById("ct-media");
+      if (mediaEl) mediaEl.setAttribute("aria-label", m.year + " " + m.title + " — image " + (slideList.length ? 1 : 0) + " of " + slideList.length);
+      if (slideList.length) { setRatioFor(slideList[0]); showImage(slideList[0]); }
+      renderSliderChrome();
       eyebrow.textContent = m.label;
       titleEl.textContent = m.title;
       textWrap.innerHTML = "";
@@ -643,6 +874,50 @@
 
     function apexFor(i) { return (LEFT0 + STEP * i + STATION_W / 2) * scale; }
 
+    /* scroll the rail so the active apex (and the card it belongs to) is on screen */
+    function keepApexVisible() {
+      if (isCompact()) return;
+      const apex = apexFor(active);
+      const view = railWrap.clientWidth;
+      const pad = 40;
+      let target = railWrap.scrollLeft;
+      if (apex - pad < railWrap.scrollLeft) target = Math.max(0, apex - pad);
+      else if (apex + pad > railWrap.scrollLeft + view) target = apex + pad - view;
+      if (Math.abs(target - railWrap.scrollLeft) > 1) {
+        railWrap.scrollTo({ left: target, behavior: reducedMotion ? "auto" : "smooth" });
+      }
+    }
+
+    /* drag-to-scroll the rail (mouse, pen, touch) */
+    (() => {
+      let down = false, startX = 0, startScroll = 0, moved = 0;
+      railWrap.addEventListener("pointerdown", (e) => {
+        if (e.target.closest(".ct-station")) return;
+        down = true; moved = 0;
+        startX = e.clientX; startScroll = railWrap.scrollLeft;
+        railWrap.classList.add("is-dragging");
+      });
+      railWrap.addEventListener("pointermove", (e) => {
+        if (!down) return;
+        const dx = e.clientX - startX;
+        moved = Math.max(moved, Math.abs(dx));
+        railWrap.scrollLeft = startScroll - dx;
+        if (moved > 4) e.preventDefault();
+      });
+      const end = () => { down = false; railWrap.classList.remove("is-dragging"); };
+      railWrap.addEventListener("pointerup", end);
+      railWrap.addEventListener("pointercancel", end);
+      railWrap.addEventListener("pointerleave", end);
+      /* keyboard scroll for the rail */
+      railWrap.addEventListener("keydown", (e) => {
+        const step = 120;
+        if (e.key === "ArrowRight") { railWrap.scrollLeft += step; e.preventDefault(); }
+        else if (e.key === "ArrowLeft") { railWrap.scrollLeft -= step; e.preventDefault(); }
+        else if (e.key === "Home") { railWrap.scrollLeft = 0; e.preventDefault(); }
+        else if (e.key === "End") { railWrap.scrollLeft = railWrap.scrollWidth; e.preventDefault(); }
+      });
+    })();
+
     /* The reference pins the card at 403px tall. Seadon copy runs to 2-3
        paragraphs, so the card grows — push the rail band beneath it rather
        than let the card cover the first dots. */
@@ -653,8 +928,7 @@
       const MIN_RAIL = 433;               // the reference's own offset
       const railTop = Math.max(MIN_RAIL, cardBottom);
       root.style.setProperty("--rail-top", railTop + "px");
-      root.style.setProperty("--stations-top", (railTop + 68) + "px");
-      const needed = railTop + 68 + 122 + 12;
+      const needed = railTop + 190 + 12;
       if (root.clientHeight < needed) root.style.height = needed + "px";
     }
 
@@ -667,7 +941,10 @@
       });
       renderRail(apexFor(i));
       renderCard(i);
-      if (!isCompact()) card.style.left = clampLeft(28 + (apexFor(i) - 165 * scale)) + "px";
+      if (!isCompact()) {
+        card.style.left = clampLeft(28 + (apexFor(i) - 165 * scale)) + "px";
+        keepApexVisible();
+      }
       if (focus) stationEls[i].focus();
     }
 
@@ -677,29 +954,44 @@
         root.style.removeProperty("--year-fs");
         root.style.removeProperty("--label-fs");
         root.style.removeProperty("--rail-top");
-        root.style.removeProperty("--stations-top");
-        root.style.removeProperty("height");
+                root.style.removeProperty("height");
         stationEls.forEach((el) => { el.style.left = ""; });
         card.style.left = "";
         renderRail(0);
         renderCard(active);
         return;
       }
-      const w = root.clientWidth - 56;
-      scale = w / DESIGN_W;
-      /* Scale type with the station so long years (2021-2022, 2027+) never wrap. */
-      root.style.setProperty("--year-fs", (34 * scale).toFixed(2) + "px");
-      root.style.setProperty("--label-fs", Math.max(9, 10 * scale).toFixed(2) + "px");
+      /* Rail is viewport-bounded but never tiny: keep the reference's type size
+         whenever the rail fits (this is the draggable case — track wider than
+         the scroller), and only shrink when the alternative is unreadable. */
+      const avail = railWrap.clientWidth;
+      const fit = Math.min(1, avail / DESIGN_W);
+      const MIN_YEAR = 20;                          // readable floor
+      const typeScale = fit < MIN_YEAR / 34 ? MIN_YEAR / 34 : fit;
+
+      const yearFs = 34 * typeScale;
+      const labelFs = 10 * typeScale;
+      root.style.setProperty("--year-fs", yearFs.toFixed(2) + "px");
+      root.style.setProperty("--label-fs", labelFs.toFixed(2) + "px");
+
+      /* ONE scale governs curve, stations and apex — declared before any use. */
+      scale = typeScale;
+
+      const visual = DESIGN_W * typeScale;
+      const trackW = Math.max(visual, avail);       // never narrower than the viewport
       svg.setAttribute("width", DESIGN_W);
       svg.setAttribute("height", 122);
       svg.setAttribute("viewBox", "0 0 " + DESIGN_W + " 122");
-      svg.style.width = w + "px";
-      stationsEl.style.width = w + "px";
+      svg.style.width = visual + "px";
+      railTrack.style.width = trackW + "px";
+      stationsEl.style.width = visual + "px";
+
       stationEls.forEach((el, i) => {
-        el.style.left = ((LEFT0 + STEP * i) * scale) + "px";
-        el.style.width = (STATION_W * scale) + "px";
+        el.style.left = ((LEFT0 + STEP * i) * typeScale) + "px";
+        el.style.width = (STATION_W * typeScale) + "px";
       });
       renderRail(apexFor(active));
+      keepApexVisible();
       card.style.left = clampLeft(28 + (apexFor(active) - 165 * scale)) + "px";
       layoutBelowCard();
     }
@@ -707,8 +999,15 @@
     let lastCompact = null;
     function onResize() {
       const c = isCompact();
-      if (c !== lastCompact) { lastCompact = c; select(0, false); active = 0; syncScale(); renderCard(0); stationEls.forEach((el, i) => { el.classList.toggle("is-active", i === 0); el.tabIndex = i === 0 ? 0 : -1; }); }
-      else syncScale();
+      if (c !== lastCompact) {
+        lastCompact = c;
+        stationEls.forEach((el, i) => {
+          el.classList.toggle("is-active", i === active);
+          el.tabIndex = i === active ? 0 : -1;
+        });
+      }
+      syncScale();
+      renderCard(active);
     }
 
     function init() {
