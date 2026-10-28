@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glassmorphism Folder Cards — 21st.dev Clone</title>
+  <style>
+    :root {
+      --bg: #f7f7f4;
+      --dots: #d8d8d3;
+      --ink: #1b1b19;
+      --ink-soft: #6d6d68;
+      --edge: rgba(255, 255, 255, 0.75);
+      --shadow: 0 24px 44px -26px rgba(28, 30, 38, 0.55);
+      --glass: rgba(255, 255, 255, 0.42);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100svh;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+      padding: 48px 24px;
+    }
+    .desk {
+      position: relative;
+      width: 100%;
+      max-width: 1180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .desk::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(currentColor 1.1px, transparent 1.4px);
+      background-size: 22px 22px;
+      color: var(--ink);
+      opacity: 0.13;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .folders {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px 56px;
+      align-items: end;
+      justify-items: center;
+      max-width: 1180px;
+      width: 100%;
+    }
+    @media (min-width: 760px) { .folders { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1100px) { .folders { grid-template-columns: repeat(3, 1fr); } }
+
+    /* ---------------- folder ---------------- */
+    .folder {
+      position: relative;
+      width: min(340px, 82vw);
+      height: 246px;
+      perspective: 1200px;
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: var(--delay, 0ms);
+      outline: none;
+    }
+    .folder.is-in { opacity: 1; transform: none; }
+    .folder::after {                       /* ambient glow / contact shadow */
+      content: "";
+      position: absolute;
+      left: 8%; right: 8%;
+      bottom: -26px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(50% 50% at 50% 50%, rgba(40, 46, 60, 0.24), transparent 72%);
+      filter: blur(6px);
+      opacity: 0.85;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      z-index: 0;
+    }
+
+    .tilt {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+
+    /* rear panel: the art lives here and shows through the mouth */
+    /* the folder itself: rounded body with a top-right tab that starts just
+       past the centre with a smooth concave transition into the body */
+
+    .tab {
+      position: absolute;
+      inset: 0;
+      border-radius: 22px;
+      overflow: hidden;
+      background: transparent;
+      z-index: 1;
+    }
+    .tab::before {                          /* raised tab, right half of the top edge */
+      content: "";
+      position: absolute;
+      top: 0; right: 0;
+      width: 42%;
+      height: 34px;
+      border-radius: 0 22px 0 0;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.85);
+    }
+    .tab::after {                           /* tab → body concave shoulder */
+      content: "";
+      position: absolute;
+      top: 22px; right: 42%;
+      width: 30px; height: 30px;
+      background: rgba(255, 255, 255, 0.42);
+      border-radius: 0 0 0 30px;
+      transform: rotate(-14deg) translate(2px, -3px);
+      box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.7);
+    }
+    .body {
+      position: absolute;
+      inset: 34px 0 0 0;
+      border-radius: 0 22px 22px 22px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      z-index: 1;
+    }
+    .art {
+      position: absolute;
+      inset: 0;
+      transform: scale(1.12) translateY(-8%);
+      transition: filter 0.5s ease;
+    }
+    .tab-art {                             /* the same print, sharp, on the tab band */
+      position: absolute;
+      top: 0; right: 0;
+      width: 54%;
+      height: 34px;
+      overflow: hidden;
+      border-radius: 0 22px 0 0;
+      z-index: 2;
+      opacity: 0.98;
+    }
+    .tab-art .art { transform: scale(1.4) translateY(-6%); filter: saturate(1.3) contrast(1.06); }
+    .folder[data-tone="dark"] .body,
+    .folder[data-tone="dark"] .tab::before { background: rgba(26, 26, 30, 0.76); }
+    .folder[data-tone="dark"] .tab::after { background: rgba(26, 26, 30, 0.6); }
+
+    /* gradient "print" artwork, one recipe per art name */
+    .art[data-art="aurora"] {
+      background:
+        radial-gradient(70% 60% at 22% 20%, #2b2f8a 0%, transparent 62%),
+        radial-gradient(60% 70% at 78% 32%, #d94a3d 0%, transparent 60%),
+        radial-gradient(80% 60% at 46% 92%, #c7cbd8 0%, transparent 65%),
+        linear-gradient(118deg, #1d2450 0%, #4f5a90 38%, #efe7dc 62%, #b7402f 88%, #2b2f8a 100%);
+      filter: blur(1.5px) saturate(1.25) contrast(1.05);
+    }
+    .art[data-art="ember"] {
+      background:
+        radial-gradient(62% 58% at 72% 30%, #ff6a2b 0%, transparent 58%),
+        radial-gradient(48% 52% at 22% 74%, #8c1d18 0%, transparent 62%),
+        conic-gradient(from 200deg at 58% 56%, #3a0d0c 0deg, #d63c1f 90deg, #1a1512 190deg, #ff8a3d 268deg, #2b0f10 360deg);
+      filter: blur(2px) saturate(1.35);
+    }
+    .art[data-art="dusk"] {
+      background:
+        radial-gradient(70% 60% at 30% 26%, #4b3f7a 0%, transparent 60%),
+        radial-gradient(60% 55% at 74% 64%, #b98a6a 0%, transparent 64%),
+        linear-gradient(150deg, #23223a, #5c5470 45%, #c9a58a 78%, #2b2333);
+      filter: blur(1.8px) saturate(1.15);
+    }
+    .art[data-art="verdant"] {
+      background:
+        radial-gradient(64% 58% at 26% 30%, #1f5b45 0%, transparent 60%),
+        radial-gradient(56% 54% at 76% 38%, #a9c46b 0%, transparent 60%),
+        linear-gradient(135deg, #10241d, #2f6a52 48%, #d4dcae 82%, #17352a);
+      filter: blur(1.8px) saturate(1.2);
+    }
+    .art[data-art="none"] { background: linear-gradient(150deg, #f2f0ea, #e6e3da); }
+
+    /* frosted front pane */
+    .front {
+      position: absolute;
+      left: 3px; right: 3px; bottom: 3px;
+      height: 70%;
+      border-radius: 20px;
+      transform-origin: 50% 0;
+      background: linear-gradient(160deg,
+        rgba(255, 255, 255, 0.58) 0%,
+        rgba(255, 255, 255, 0.32) 46%,
+        rgba(255, 255, 255, 0.5) 100%);
+      -webkit-backdrop-filter: blur(14px) saturate(1.5);
+      backdrop-filter: blur(14px) saturate(1.5);
+      box-shadow:
+        inset 0 1px 0 var(--edge),
+        inset 1px 0 0 rgba(255, 255, 255, 0.5),
+        inset -1px 0 0 rgba(255, 255, 255, 0.35),
+        inset 0 -20px 30px -22px rgba(20, 22, 30, 0.42),
+        0 -1px 0 rgba(255, 255, 255, 0.55),
+        0 -8px 18px -12px rgba(20, 22, 30, 0.3),
+        0 12px 26px -18px rgba(20, 22, 30, 0.5);
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+      z-index: 3;
+      overflow: hidden;
+    }
+    .folder[data-tone="dark"] .front {
+      background: linear-gradient(160deg,
+        rgba(58, 58, 64, 0.62) 0%,
+        rgba(26, 26, 30, 0.52) 48%,
+        rgba(40, 40, 46, 0.66) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        inset 0 -18px 26px -20px rgba(0, 0, 0, 0.7),
+        0 -1px 0 rgba(255, 255, 255, 0.12),
+        0 12px 26px -18px rgba(0, 0, 0, 0.6);
+      color: #f4f4f2;
+    }
+    .front::after {                        /* sheen sweeping the glass */
+      content: "";
+      position: absolute;
+      inset: -40% -20%;
+      background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.4) 50%, transparent 62%);
+      transform: translateX(-40%);
+      opacity: 0.55;
+      pointer-events: none;
+      transition: transform 0.9s ease, opacity 0.6s ease;
+    }
+    .folder:hover .front::after { transform: translateX(35%); }
+
+    .front-inner {
+      position: absolute;
+      inset: 0;
+      padding: 18px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 2px;
+    }
+    .folder[data-label="top-left"] .front-inner { justify-content: flex-start; }
+    .folder[data-label="top-right"] .front-inner { justify-content: flex-start; align-items: flex-end; text-align: right; }
+
+    .label {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      line-height: 1.1;
+    }
+    .meta {
+      font-size: 13.5px;
+      color: var(--ink-soft);
+      letter-spacing: 0.005em;
+    }
+    .folder[data-tone="dark"] .meta { color: rgba(244, 244, 242, 0.62); }
+
+    .action {
+      position: absolute;
+      right: 16px; bottom: 16px;
+      width: 38px; height: 38px;
+      display: grid; place-items: center;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #2a2a2b, #101011);
+      color: #fff;
+      font-size: 19px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.24),
+        0 6px 14px -8px rgba(0, 0, 0, 0.85);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.2s ease;
+      z-index: 5;
+    }
+    .action:hover { transform: translateY(-1px) scale(1.03); }
+    .action:active { transform: scale(0.96); }
+    .action:focus-visible { outline: 2px solid #111; outline-offset: 3px; }
+    .action.more {
+      background: rgba(255, 255, 255, 0.55);
+      color: #23231f;
+      box-shadow: inset 0 0 0 1px rgba(20, 22, 28, 0.14), 0 4px 10px -6px rgba(0, 0, 0, 0.35);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+    }
+    .action.more svg { display: block; }
+    .action[hidden] { display: none; }
+
+    /* ---------------- files (open state) ---------------- */
+    .files {
+      position: absolute;
+      left: 50%;
+      bottom: 26%;
+      width: 82%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .file {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(20, 22, 28, 0.09);
+      box-shadow: 0 8px 16px -12px rgba(20, 22, 28, 0.6);
+      font-size: 12.5px;
+      color: #23231f;
+      opacity: 0;
+      transform: translateY(14px) scale(0.96);
+      transition: opacity 0.28s ease, transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: var(--fd, 0ms);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      border: 0;
+      background-clip: padding-box;
+    }
+    .file:hover { background: #fff; transform: translateY(-1px); }
+    .file:focus-visible { outline: 2px solid #111; outline-offset: 2px; }
+    .file .nm { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file .mt { color: #7a7a74; font-size: 11.5px; white-space: nowrap; }
+    .file .chip {
+      width: 22px; height: 22px; border-radius: 7px; flex: none;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+    }
+    .file[data-art="aurora"] .chip { background: linear-gradient(135deg, #2b2f8a, #d94a3d 60%, #efe7dc); }
+    .file[data-art="dusk"] .chip { background: linear-gradient(135deg, #23223a, #c9a58a); }
+    .file[data-art="ember"] .chip { background: linear-gradient(135deg, #8c1d18, #ff8a3d); }
+    .file[data-art="verdant"] .chip { background: linear-gradient(135deg, #10241d, #a9c46b); }
+    .file:not([data-art]) .chip { background: linear-gradient(135deg, #e8e5dc, #cfcbc0); }
+
+    .folder.is-open .front {
+      transform: translateY(-10px) rotateX(-46deg);
+      transform-origin: 50% 100%;
+      box-shadow:
+        inset 0 1px 0 var(--edge),
+        0 -14px 26px -18px rgba(20, 22, 30, 0.55);
+      opacity: 0.94;
+    }
+    .folder.is-open .body { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 14px 24px -20px rgba(20, 22, 30, 0.5); }
+    .folder.is-open .files { pointer-events: auto; }
+    .folder.is-open .file { opacity: 1; transform: none; }
+    .folder.is-open::after { transform: translateY(8px) scaleX(1.06); opacity: 1; }
+    .folder.is-open .tilt { transform: none !important; }
+
+    /* drop-in animation for a newly added file */
+    .file.dropping {
+      animation: dropIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes dropIn {
+      0% { opacity: 0; transform: translateY(-26px) scale(0.9) rotate(-2deg); }
+      70% { opacity: 1; transform: translateY(2px) scale(1.01) rotate(0.4deg); }
+      100% { opacity: 1; transform: none; }
+    }
+
+    /* context menu */
+    .menu {
+      position: absolute;
+      z-index: 40;
+      min-width: 156px;
+      padding: 6px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(14px) saturate(1.4);
+      backdrop-filter: blur(14px) saturate(1.4);
+      box-shadow: 0 20px 40px -22px rgba(20, 22, 30, 0.6), inset 0 0 0 1px rgba(20, 22, 28, 0.08);
+      display: none;
+      transform-origin: top right;
+    }
+    .menu.is-open { display: block; animation: menuIn 0.16s ease-out; }
+    @keyframes menuIn { from { opacity: 0; transform: scale(0.96) translateY(-4px); } }
+    .menu button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      font: inherit;
+      font-size: 13px;
+      color: #23231f;
+      cursor: pointer;
+    }
+    .menu button:hover, .menu button:focus-visible { background: rgba(20, 22, 28, 0.07); outline: none; }
+    .menu button.danger { color: #b3261e; }
+
+    .caption {
+      position: relative;
+      z-index: 1;
+      margin: 56px 0 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #8b8b83;
+      text-align: center;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .folder, .front, .file, .tilt, .front::after { transition: none !important; }
+      .folder { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="desk">
+    <div class="folders" id="folders"></div>
+    <p class="caption">Hover to lean · Click to open · + to add</p>
+  </div>
+
+  <div class="menu" id="menu" role="menu" aria-label="Folder actions"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
