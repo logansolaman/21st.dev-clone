@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hero 195 — 21st.dev Clone</title>
+  <style>
+    :root {
+      --background: #ffffff;
+      --foreground: #0a0a0a;
+      --muted: #f5f5f5;
+      --muted-foreground: #737373;
+      --border: #e5e5e5;
+      --primary: #171717;
+      --primary-foreground: #fafafa;
+      --line: rgba(10, 10, 10, 0.07);
+    }
+    html.dark {
+      --background: #0a0a0a;
+      --foreground: #fafafa;
+      --muted: #262626;
+      --muted-foreground: #a3a3a3;
+      --border: #262626;
+      --primary: #fafafa;
+      --primary-foreground: #0a0a0a;
+      --line: rgba(255, 255, 255, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--background);
+      color: var(--foreground);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* the vertical rules framing the hero */
+    .framed {
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      padding: 80px 0;
+      position: relative;
+    }
+    /* faint fading horizontal guide lines */
+    .framed::before,
+    .framed::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--line) 22%, var(--line) 78%, transparent);
+      pointer-events: none;
+    }
+    .framed::before { top: 0; }
+    .framed::after { bottom: 0; }
+
+    .head { position: relative; max-width: 42rem; margin: 0 auto; padding: 8px; }
+
+    h1 {
+      margin: 24px 4px 0;
+      text-align: center;
+      font-size: clamp(2.25rem, 5vw, 4.5rem);
+      line-height: 1.03;
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      text-wrap: balance;
+    }
+    .sub {
+      margin: 24px 8px 0;
+      max-width: 36rem;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      font-size: clamp(1rem, 1.4vw, 1.25rem);
+      line-height: 1.5;
+      font-weight: 500;
+      color: var(--muted-foreground);
+    }
+    .cta-row { margin: 24px 8px 0; display: flex; justify-content: center; gap: 8px; }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--primary);
+      color: var(--primary-foreground);
+      font: 500 14px/1 inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.16s ease, transform 0.12s ease;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.99); }
+    .btn-primary:focus-visible { outline: 2px solid var(--foreground); outline-offset: 2px; }
+
+    /* ---------- tabs ---------- */
+    .tabs-wrap { margin-top: 64px; }
+    @media (min-width: 768px) { .tabs-wrap { margin-top: 80px; } }
+
+    .tablist {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      max-width: 20rem;
+      margin: 0 auto 24px;
+      padding: 4px;
+      border-radius: 6px;
+      background: var(--muted);
+      color: var(--muted-foreground);
+    }
+    @media (min-width: 768px) { .tablist { max-width: none; flex-wrap: nowrap; } }
+    .tablist:focus-visible { outline: 2px solid var(--foreground); outline-offset: 2px; }
+
+    .tab {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted-foreground);
+      font: 400 14px/1.4 inherit;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .tab svg { width: 16px; height: 16px; flex: none; }
+    .tab:hover { color: var(--foreground); }
+    .tab:focus-visible { outline: 2px solid var(--foreground); outline-offset: 2px; }
+    .tab[aria-selected="true"] {
+      background: var(--background);
+      color: var(--foreground);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ---------- panel ---------- */
+    .viewer { position: relative; isolation: isolate; }
+    .panel { margin-top: 8px; margin-inline: -1px; background: var(--background); }
+    .panel[hidden] { display: none; }
+    .panel.is-entering { animation: fadeIn 0.5s ease both; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .shot-frame {
+      position: relative;
+      display: block;
+      line-height: 0;
+    }
+    .shot-frame img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: top;
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    /* travelling gradient border: a conic sweep clipped to a 1px ring */
+    .glow-border {
+      position: absolute;
+      inset: -1px;
+      padding: 1px;
+      pointer-events: none;
+      overflow: hidden;
+      -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+      mask-composite: exclude;
+    }
+    .glow-border::before {
+      content: "";
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 160%; aspect-ratio: 1;
+      translate: -50% -50%;
+      background: conic-gradient(from 0deg,
+        transparent 0deg, transparent 250deg,
+        #ffaa40 290deg, #9c40ff 320deg, transparent 350deg);
+      animation: sweep 5.5s linear infinite;
+    }
+    @keyframes sweep { to { rotate: 360deg; } }
+
+    .placeholder {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 16 / 10;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      color: var(--muted-foreground);
+      font-size: 14px;
+      background:
+        repeating-linear-gradient(45deg, transparent 0 10px, var(--line) 10px 11px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .glow-border::before { animation: none; }
+      .panel.is-entering { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="container">
+      <div class="framed">
+        <div class="head">
+          <h1>Beautiful blocks for Shadcn&nbsp;UI.</h1>
+          <p class="sub">Shadcnblocks.com offers the best collection of components and blocks for shadcn/ui.</p>
+          <div class="cta-row">
+            <a class="btn-primary" href="https://shadcnblocks.com" target="_blank" rel="noopener">Download</a>
+          </div>
+        </div>
+
+        <div class="tabs-wrap">
+          <div class="tablist" role="tablist" aria-label="Dashboard previews" id="tablist"></div>
+          <div class="viewer">
+            <div id="panels"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
